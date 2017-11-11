@@ -24,10 +24,11 @@ module.exports = function(options) {
 	
 	// (pgp_defaults) Default options for pg-promise
 	options.pgp = options.pgp || {};
+	options.pgp.initOptions = options.pgp.initOptions || {};
 	options.pgp.table = options.pgp.table || 'twitter2pg';
 	options.pgp.column = options.pgp.column || 'tweets';
 	options.pgp.query = options.pgp.query || 'INSERT INTO ' + options.pgp.table + '(' + options.pgp.column + ') VALUES ($1);';
-	options.pgp.callback
+	options.pgp.callback = options.pgp.callback || function(){};
 	
 	// (pgp_connect) Connection options for pg-promise
 	options.pgp.connection = options.pgp.connection || {};
