@@ -1,0 +1,57 @@
+{
+  "name": "twitter2pg",
+  "version": "0.0.0",
+  "description": "Module for extracting Twitter data to PostgreSQL databases",
+  "main": "index.js",
+  "scripts": {
+    "coverage": "istanbul cover node_modules/tape/bin/tape tests/test.js && cat ./coverage/lcov.info | coveralls",
+    "istanbul": "istanbul cover node_modules/tape/bin/tape tests/test.js",
+    "test": "node ./tests/test.js"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rrwen/twitter2pg.git"
+  },
+  "keywords": [
+    "twitter",
+    "data",
+    "pg",
+    "postgres",
+    "postgresql",
+    "database",
+    "stream",
+    "api",
+    "token",
+    "access",
+    "geo",
+    "tweet",
+    "post",
+    "get",
+    "location",
+    "oauth",
+    "rest",
+    "sample",
+    "social",
+    "media"
+  ],
+  "author": "Richard Wen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rrwen/twitter2pg/issues"
+  },
+  "homepage": "https://github.com/rrwen/twitter2pg#readme",
+  "devDependencies": {
+    "coveralls": "^3.0.0",
+    "istanbul": "^0.4.5",
+    "moment": "^2.19.1",
+    "tape": "^4.8.0"
+  },
+  "dependencies": {
+    "jsonata": "^1.4.0",
+    "pg-promise": "^7.3.1",
+    "twitter": "^1.7.1"
+  }
+}
