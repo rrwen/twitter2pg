@@ -25,16 +25,16 @@ Setting | Value
 **column** | tweets
 **type** | jsonb
 
-**Install.** The tests for [twitter2pg](https://www.npmjs.com/package/twitter2pg) require a local development PostgreSQL database to be setup:
+**Setup.** The tests for [twitter2pg](https://www.npmjs.com/package/twitter2pg) require a local development PostgreSQL database to be setup:
 
-1. Install [PostgreSQL](https://www.postgresql.org/)
+1. Ensure [PostgreSQL](https://www.postgresql.org/) is installed
 2. Add the `psql` command to the system environment
 
 ```
 psql --help
 ```
 
-**Step 1.** Create the test super user `twitter2pg_user`, database `twitter2pg_database`, and table `twitter2pg_table` using the admin user in `psql`:
+**Step 1.** Create the test super user, database, and table by passing the [create.sql](create.sql) file to `psql`:
 
 * `-h`: database host address
 * `-p`: database port number
@@ -45,13 +45,13 @@ psql --help
 psql -h localhost -p 5432 -d postgres -U admin -f tests/create.sql
 ```
 
-**Step 3.** Run [Tests](../README.md#tests) using `npm` (outside of `psql`):
+**Step 2.** Run [Tests](../README.md#tests) using `npm` (outside of `psql`):
 
 ```sh
 npm test
 ```
 
-**Optional.** Drop the test database `twitter2pg_database` and user `twitter2pg_user` using `psql` with the admin user:
+**Optional.** Drop the test database `twitter2pg_database` and user `twitter2pg_user` by passing the [drop.sql](drop.sql) file to `psql`:
 
 ```sh
 psql -h localhost -p 5432 -d postgres -U admin -f tests/drop.sql
