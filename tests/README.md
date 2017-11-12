@@ -51,7 +51,7 @@ psql -h localhost -p 5432 -d postgres -U admin -f tests/create.sql
 npm test
 ```
 
-**Optional.** Drop the test database `twitter2pg_database` and user `twitter2pg_user` by passing the [drop.sql](drop.sql) file to `psql`:
+**Optional.** Drop the test database and user by passing the [drop.sql](drop.sql) file to `psql`:
 
 ```sh
 psql -h localhost -p 5432 -d postgres -U admin -f tests/drop.sql
