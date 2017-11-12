@@ -37,12 +37,12 @@ psql -h localhost -p 5432 -d postgres -U admin
 
 **Step 2.** Create a test super user, database, and table (exiting `psql` after): 
 
-* **user**: twitter2pg_user
-* **password**: twitter2pg_password
-* **database**: twitter2pg_database
-* **table**: twitter2pg_table
-* **column**: tweets
-* **column_type**: jsonb
+* **USER**: twitter2pg_user
+* **PASSWORD**: twitter2pg_password
+* **DATABASE**: twitter2pg_database
+* **TABLE**: twitter2pg_table
+* **COLUMN**: tweets
+* **TYPE**: jsonb
 
 ```sql
 CREATE USER 'twitter2pg_user' WITH LOGIN PASSWORD 'twitter2pg_password' SUPERUSER;
