@@ -17,7 +17,8 @@ Module for extracting Twitter data to PostgreSQL databases
 **Install.** The tests for [twitter2pg]() require a local development PostgreSQL database to be setup:
 
 1. Install [PostgreSQL](https://www.npmjs.com/package/twitter2pg)
-2. Add the `psql` command to the system environment (See [Windows Environment](#windows-environment) if the command below does not run)
+2. Add the `psql` command to the system environment
+3. See [Windows Environment](#windows-environment) if `psql` is not found
 
 ```
 psql --help
@@ -64,7 +65,9 @@ psql -h localhost -p 5432 -d postgres -U admin -c "DROP DATABASE IF EXISTS twitt
 
 ### Windows Environment
 
-The PostgreSQL commands may not be added to the system environmental variables. You may temporarily add these commands by including the PostgreSQL bin folder in the system environment (replacing `9.6` with your version of PostgreSQL):
+If the `psql` command is not found, you may temporarily add it by including the PostgreSQL bin folder in the system environment:
+
+* Replace `9.6` with your version of PostgreSQL
 
 ```
 SET PATH=%PATH%;C:\Program Files\PostgreSQL\9.6\bin
