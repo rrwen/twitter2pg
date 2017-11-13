@@ -34,7 +34,7 @@ Setting | Value
 psql --help
 ```
 
-**Step 1.** Create the test super user, database, and table by passing the [create.sql](create.sql) file to `psql`:
+**Step 1.** Create the test user, database, and table by passing the [create.sql](create.sql) file to `psql`:
 
 * `-h`: database host address
 * `-p`: database port number
