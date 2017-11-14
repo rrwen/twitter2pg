@@ -1,16 +1,16 @@
 // Richard Wen
 // rrwen.dev@gmail.com
 
+// (packages) Package dependencies
 require('dotenv').config();
-
+const pgp = require('pg-promise')();
 var fs = require('fs');
 var moment = require('moment');
-var pgp = require('pg-promise');
 var pgtools = require('pgtools');
 var test = require('tape');
 var twitter2pg = require('../index.js');
 
-// (package_info) Get package metadata
+// (test_info) Get package metadata
 var json = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 var testedPackages = [];
 for (var k in json.dependencies) {
@@ -21,7 +21,7 @@ for (var k in json.devDependencies) {
   devPackages.push(k + ' (' + json.devDependencies[k] + ')');
 }
 
-// (test_file) Pipe tests to file and output
+// (test_log) Pipe tests to file and output
 if (!fs.existsSync('./tests/log')){
     fs.mkdirSync('./tests/log');
 }
@@ -38,7 +38,7 @@ var connect = {
 	database: 'twitter2pg_database'
 };
 
-// (test_run) Run tests
+// (test) Run tests
 test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 	t.comment('Node.js (' + process.version + ')');
     t.comment('Description: ' + json.description);
@@ -46,7 +46,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
     t.comment('Dependencies: ' + testedPackages.join(', '));
     t.comment('Developer: ' + devPackages.join(', '));
 	
-	// (test_connect_admin)  Admin connection to create test database
+	// (test_admin)  Admin connection to create test database
 	var connectAdmin = {
 		user: process.env.PGUSER,
 		password: process.env.PGPASSWORD,
@@ -56,22 +56,43 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 	
 	// (test_db) Create test database
 	pgtools.createdb(connectAdmin, 'twitter2pg_database', function (err, res) {
-		if (err) throw err;
-		db.task(t = > {
+		
+		// (test_db_error) Log and exit on test databse creation error
+		if (err) {
+			throw err;
+		}
+		
+		// (test_db_connect) Connect to test database
+		var db = pgp(connect);
+		
+		// (test_db_tasks) Run tests on test database
+		db.task(t => {
 			
-			// (test_table) Create test table
+			// (test_db_table) Create test table
 			return t.any('CREATE TABLE twitter2pg_table (tweets jsonb);')
 				.then(events => {
-					return t.any('');
+					//return t.any('');
+				})
+				.then(events => {
+					//x
 				});
 		})
+			.then(event => {
+				
+				// (test_db_drop) Drop test database
+				pgp.end();
+				pgtools.dropdb(connectAdmin, 'twitter2pg_database', function(err, res) {
+					if (err) {
+						throw err
+					};
+				});
+			})
 			.catch(err => {
+				
+				// (test_fail) Generic failure message under db.task
 				t.fail('(MAIN) db.task: ' + err.message);
 			});
-		pgtools.dropdb(connectAdmin, 'twitter2pg_database', function(err, res) {
-			if (err) throw err;
-		});
-	};
+	});
 	
 	// (test_pass) Pass a test
 	t.pass('(MAIN) test pass');
@@ -87,7 +108,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 	t.deepEquals(actual, expected, '(B) Deep equal test');
 	
 	// (test_fail) Fail a test
-	t.fail('(MAIN) test fail');
+	//t.fail('(MAIN) test fail');
 	
 	t.end();
 });
