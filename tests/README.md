@@ -14,45 +14,35 @@ Module for extracting Twitter data to PostgreSQL databases
 
 ## Test Environment
 
-The test environment requires an isolated PostgreSQL database named `twitter2pg_database` and a super user named `twitter2pg_user` with the following definitions:
+The test environment creates an isolated PostgreSQL database named `twitter2pg_database` with the following definitions:
 
 Setting | Value
 --- | ---
-**user** | twitter2pg_user
-**password** | twitter2pg_password
 **database** | twitter2pg_database
 **table** | twitter2pg_table
 **column** | tweets
 **type** | jsonb
 
-**Setup.** The tests for [twitter2pg](https://www.npmjs.com/package/twitter2pg) require a local development PostgreSQL database to be setup:
+To connect to Twiter and PostgreSQL, a `.env` file is required:
 
-1. Ensure [PostgreSQL](https://www.postgresql.org/) is installed
-2. Add the `psql` command to the system environment
-
-```
-psql --help
-```
-
-**Step 1.** Create the test user, database, and table by passing the [create.sql](create.sql) file to `psql`:
-
-* `-h`: database host address
-* `-p`: database port number
-* `-d`: maintenance database name (must already exist)
-* `-U`: user name of administrative user
+1. Create a `.env` file in the root directory
+2. Use the template below to provide Twitter credentials and PostgreSQL connection details inside the `.env` file
+3. The user in PostgreSQL msut be a super user
 
 ```
-psql -h localhost -p 5432 -d postgres -U admin -f tests/create.sql
+TWITTER_CONSUMER_KEY=*********************
+TWITTER_CONSUMER_SECRET=*********************
+TWITTER_ACCESS_TOKEN_KEY=*********************
+TWITTER_ACCESS_TOKEN_SECRET= *********************
+PGHOST=localhost
+PGPORT=5432
+PGDATABASE=postgres
+PGUSER=some_super_user
+PGPASSWORD=*********************
 ```
 
-**Step 2.** Run [Tests](../README.md#tests) using `npm` (outside of `psql`):
+The [Tests](../README.md#tests) can then be run with the following command:
 
-```sh
+```
 npm test
-```
-
-**Optional.** Drop the test database and user by passing the [drop.sql](drop.sql) file to `psql`:
-
-```sh
-psql -h localhost -p 5432 -d postgres -U admin -f tests/drop.sql
 ```
