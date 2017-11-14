@@ -14,8 +14,9 @@ Module for extracting Twitter data to PostgreSQL databases
 
 ## Install
 
-1. Install [Node.js](https://nodejs.org/en/)
-2. Install [twitter2pg](https://www.npmjs.com/package/twitter2pg) via `npm`
+1. Install [PostgreSQL](https://www.postgresql.org/)
+2. Install [Node.js](https://nodejs.org/en/)
+3. Install [twitter2pg](https://www.npmjs.com/package/twitter2pg) via `npm`
 
 ```
 npm install --save twitter2pg
@@ -60,7 +61,7 @@ The purpose can mention goals that include fixes to bugs, addition of features, 
 
 ## Description
 
-The description is a short summary of the changes made such as improved speeds, implementation
+The description is a short summary of the changes made such as improved speeds or features, and implementation details.
 
 ## Changes
 
