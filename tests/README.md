@@ -30,15 +30,15 @@ To connect to Twiter and PostgreSQL, a `.env` file is required:
 3. The user in PostgreSQL msut be a super user
 
 ```
-TWITTER_CONSUMER_KEY=*********************
-TWITTER_CONSUMER_SECRET=*********************
-TWITTER_ACCESS_TOKEN_KEY=*********************
-TWITTER_ACCESS_TOKEN_SECRET= *********************
+TWITTER_CONSUMER_KEY=***
+TWITTER_CONSUMER_SECRET=***
+TWITTER_ACCESS_TOKEN_KEY=***
+TWITTER_ACCESS_TOKEN_SECRET=***
 PGHOST=localhost
 PGPORT=5432
 PGDATABASE=postgres
 PGUSER=some_super_user
-PGPASSWORD=*********************
+PGPASSWORD=***
 ```
 
 The [Tests](../README.md#tests) can then be run with the following command:
