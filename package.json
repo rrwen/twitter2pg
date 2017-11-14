@@ -45,6 +45,7 @@
   "homepage": "https://github.com/rrwen/twitter2pg#readme",
   "devDependencies": {
     "coveralls": "^3.0.0",
+    "dotenv": "^4.0.0",
     "istanbul": "^0.4.5",
     "moment": "^2.19.1",
     "tape": "^4.8.0"
