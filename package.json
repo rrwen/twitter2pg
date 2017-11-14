@@ -48,6 +48,7 @@
     "dotenv": "^4.0.0",
     "istanbul": "^0.4.5",
     "moment": "^2.19.1",
+    "pgtools": "^0.3.0",
     "tape": "^4.8.0"
   },
   "dependencies": {

@@ -4,7 +4,7 @@
 var jsonata = require("jsonata");
 var Twitter = require('twitter');
 
-module.exports = function(options) {
+module.exports = options => {
 	options = options || {};
 	
 	// (twitter_defaults) Default options for twitter

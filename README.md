@@ -106,7 +106,7 @@ npm install
 
 1. Clone into current path `git clone https://github.com/rrwen/twitter2pg`
 2. Enter into folder `cd twitter2pg`
-3. Ensure [tape](https://www.npmjs.com/package/tape) and [moment](https://www.npmjs.com/package/moment) are available
+3. Ensure [devDependencies](https://docs.npmjs.com/files/package.json#devdependencies) are installed and available
 4. Run tests
 5. Results are saved to `./tests/log` with each file corresponding to a version tested
 

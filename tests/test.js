@@ -1,10 +1,14 @@
 // Richard Wen
 // rrwen.dev@gmail.com
 
+require('dotenv').config();
+
 var fs = require('fs');
 var moment = require('moment');
-var twitter2pg = require('../index.js');
+var pgp = require('pg-promise');
+var pgtools = require('pgtools');
 var test = require('tape');
+var twitter2pg = require('../index.js');
 
 // (package_info) Get package metadata
 var json = JSON.parse(fs.readFileSync('package.json', 'utf8'));
@@ -25,13 +29,49 @@ var testFile = './tests/log/test_' + json.version.split('.').join('_') + '.txt';
 test.createStream().pipe(fs.createWriteStream(testFile));
 test.createStream().pipe(process.stdout);
 
+// (test_connect) Database connection for test database
+var connect = {
+	user: process.env.PGUSER,
+	password: process.env.PGPASSWORD,
+	port: process.env.PGPORT,
+	host: process.env.PGHOST,
+	database: 'twitter2pg_database'
+};
+
 // (test_run) Run tests
 test('Tests for ' + json.name + ' (' + json.version + ')', t => {
-    t.comment('Node.js (' + process.version + ')');
+	t.comment('Node.js (' + process.version + ')');
     t.comment('Description: ' + json.description);
     t.comment('Date: ' + moment().format('YYYY-MM-DD hh:mm:ss'));
     t.comment('Dependencies: ' + testedPackages.join(', '));
     t.comment('Developer: ' + devPackages.join(', '));
+	
+	// (test_connect_admin)  Admin connection to create test database
+	var connectAdmin = {
+		user: process.env.PGUSER,
+		password: process.env.PGPASSWORD,
+		port: process.env.PGPORT,
+		host: process.env.PGHOST
+	};
+	
+	// (test_db) Create test database
+	pgtools.createdb(connectAdmin, 'twitter2pg_database', function (err, res) {
+		if (err) throw err;
+		db.task(t = > {
+			
+			// (test_table) Create test table
+			return t.any('CREATE TABLE twitter2pg_table (tweets jsonb);')
+				.then(events => {
+					return t.any('');
+				});
+		})
+			.catch(err => {
+				t.fail('(MAIN) db.task: ' + err.message);
+			});
+		pgtools.dropdb(connectAdmin, 'twitter2pg_database', function(err, res) {
+			if (err) throw err;
+		});
+	};
 	
 	// (test_pass) Pass a test
 	t.pass('(MAIN) test pass');
