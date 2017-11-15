@@ -47,7 +47,6 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 
 		// (a_test_get_search_singlerow) Insert searched tweets as one row
 		client => {
-			t.comment('BEGIN');
 			t.comment('(A) tests on Twitter REST API');
 			client.connect();
 			return client.query('CREATE TABLE twitter2pg_get_search_singlerow(tweets jsonb);')

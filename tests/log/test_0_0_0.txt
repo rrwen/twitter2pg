@@ -2,10 +2,9 @@ TAP version 13
 # Tests for twitter2pg (0.0.0)
 # Node.js (v7.9.0)
 # Description: Module for extracting Twitter data to PostgreSQL databases
-# Date: 2017-11-14 10:23:21
+# Date: 2017-11-14 10:27:03
 # Dependencies: jsonata (^1.4.0), pg (^7.4.0), twitter (^1.7.1)
 # Developer: coveralls (^3.0.0), dotenv (^4.0.0), istanbul (^0.4.5), moment (^2.19.1), pg-testdb (^1.0.4), tape (^4.8.0)
-# BEGIN
 # (A) tests on Twitter REST API
 ok 1 (A) GET search/tweets to INSERT VALUES
 ok 2 (A) GET search/tweets to INSERT statuses as json_array_elements
