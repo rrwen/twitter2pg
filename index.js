@@ -9,6 +9,10 @@ var Twitter = require('twitter');
 module.exports = options => {
 	options = options || {};
 	
+	// (stream_defaults) Default options for streams
+	options.stream = options.stream || {};
+	options.stream.callback = options.stream.callback || function(){};
+	
 	// (twitter_defaults) Default options for twitter
 	options.twitter = options.twitter || {};
 	options.twitter.method = options.twitter.method || 'get';
@@ -53,7 +57,6 @@ module.exports = options => {
 	if (options.twitter.method == 'stream') {
 		var stream = client[options.twitter.method](options.twitter.path, options.twitter.params);
 		stream.on('data', function(tweets) {
-			options.twitter.callback(tweets);
 			
 			// (twitter_stream_jsonata) Filter tweets using jsonata syntax
 			if (options.jsonata) {
@@ -61,7 +64,10 @@ module.exports = options => {
 			}
 			
 			// (twitter_stream_pg) Insert tweets as an array
-			pgClient.query(options.pg.query, [tweets], options.pg.callback);
+			pgClient.query(options.pg.query, [JSON.stringify(tweets)], function(err, res) {
+				var data = {stream: stream, tweets: tweets, res: res};
+				options.stream.callback(err, data);
+			});
 		});
 		return stream;
 	} else {

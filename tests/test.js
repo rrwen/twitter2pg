@@ -48,7 +48,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 		// (a_test_get_search_singlerow) Insert searched tweets as one row
 		client => {
 			t.comment('BEGIN');
-			t.comment('(A) tests on REST API');
+			t.comment('(A) tests on Twitter REST API');
 			client.connect();
 			return client.query('CREATE TABLE twitter2pg_get_search_singlerow(tweets jsonb);')
 				.then(() => {
@@ -113,14 +113,117 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 					t.fail('(A) GET search/tweets to INSERT statuses as json_array_elements: ' + err.message);
 				});
 		},
+		
+		// (a_test_get_favorites) Insert 20 most recently liked tweets as multiple rows
 		client => {
-			return client.query('SELECT * FROM twitter2pg_get_search_multirow');
+			return client.query('CREATE TABLE twitter2pg_get_favorites(tweets jsonb);')
+				.then(() => {
+					return twitter2pg({
+						twitter: {
+							method: 'get',
+							path: 'favorites/list',
+							params: {}
+						},
+						pg: {
+							table: 'twitter2pg_get_favorites',
+							column: 'tweets',
+							query: 'INSERT INTO twitter2pg_get_favorites(tweets) VALUES($1);',
+							connection: client
+						}
+					})
+						.then(data => {
+							return client.query('SELECT * FROM twitter2pg_get_favorites;')
+								.then(res => {
+									var actual = data.tweets;
+									var expected = res.rows[0].tweets;
+									t.deepEquals(actual, expected, '(A) GET favorites/list to INSERT VALUES');
+								});
+						});
+				})
+				.catch(err => {
+					t.fail('(A) GET favorites/list to INSERT VALUES: ' + err.message);
+				});
+		},
+		
+		// (b_test_stream_track_keyword) Create streaming track for keyword twitter
+		client => {
+			t.comment('(B) tests on Twitter Streaming API');
+			return client.query('CREATE TABLE twitter2pg_stream_track_keyword(tweets jsonb);')
+				.then(() => {
+					var stream = twitter2pg({
+						twitter: {
+							method: 'stream',
+							path: 'statuses/filter',
+							params: {track: 'twitter'}
+						},
+						pg: {
+							table: 'twitter2pg_stream_track_keyword',
+							column: 'tweets',
+							query: 'INSERT INTO twitter2pg_stream_track_keyword(tweets) VALUES($1);',
+							connection: client
+						},
+						stream: {
+							callback: (err, data) => {
+								console.log(data);
+								data.stream.destroy();
+							}
+						}
+					});
+					stream.on('data', function(tweets) {
+						t.pass('(B) STREAM statuses/filter with keyword track');
+						stream.destroy();
+					});
+					stream.on('error', function(error) {
+						t.fail('(B) STREAM statuses/filter with keyword track: ' + error.message);
+						stream.destroy();
+					});
+				})
+				.catch(err => {
+					t.fail('(B) STREAM statuses/filter with keyword track: ' + err.message);
+				});
+		},
+		
+		// (b_test_stream_locations) Create streaming track for bounding box locations
+		client => {
+			return client.query('CREATE TABLE twitter2pg_stream_locations(tweets jsonb);')
+				.then(() => {
+					var stream = twitter2pg({
+						twitter: {
+							method: 'stream',
+							path: 'statuses/filter',
+							params: {locations: '-122.75,36.8,-121.75,37.8'} // SW(lon, lat), NE(lon, lat)
+						},
+						pg: {
+							table: 'twitter2pg_stream_locations',
+							column: 'tweets',
+							query: 'INSERT INTO twitter2pg_stream_locations(tweets) VALUES($1);',
+							connection: client
+						},
+						stream: {
+							callback: (err, data) => {
+								console.log(data);
+								data.stream.destroy();
+							}
+						}
+					});
+					stream.on('data', function(tweets) {
+						t.pass('(B) STREAM statuses/filter given locations bounds');
+						stream.destroy();
+					});
+					stream.on('error', function(error) {
+						t.fail('(B) STREAM statuses/filter given locations bounds: ' + error.message);
+						stream.destroy();
+					});
+				})
+				.catch(err => {
+					t.fail('(B) STREAM statuses/filter given locations bounds: ' + err.message);
+				});
 		}
 	];
 
 	// (test_run) Run the tests
 	pgtestdb(options, (err, res) => {
-		t.comment('END');
+		if (err) throw err;
 	});
 	t.end();
 });
