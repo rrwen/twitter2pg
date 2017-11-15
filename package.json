@@ -48,12 +48,12 @@
     "dotenv": "^4.0.0",
     "istanbul": "^0.4.5",
     "moment": "^2.19.1",
-    "pgtools": "^0.3.0",
+    "pg-testdb": "^1.0.4",
     "tape": "^4.8.0"
   },
   "dependencies": {
     "jsonata": "^1.4.0",
-    "pg-promise": "^7.3.1",
+    "pg": "^7.4.0",
     "twitter": "^1.7.1"
   }
 }

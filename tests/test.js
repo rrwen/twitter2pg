@@ -3,10 +3,9 @@
 
 // (packages) Package dependencies
 require('dotenv').config();
-const pgp = require('pg-promise')();
 var fs = require('fs');
 var moment = require('moment');
-var pgtools = require('pgtools');
+var pgtestdb = require('pg-testdb');
 var test = require('tape');
 var twitter2pg = require('../index.js');
 
@@ -29,13 +28,10 @@ var testFile = './tests/log/test_' + json.version.split('.').join('_') + '.txt';
 test.createStream().pipe(fs.createWriteStream(testFile));
 test.createStream().pipe(process.stdout);
 
-// (test_connect) Database connection for test database
-var connect = {
-	user: process.env.PGUSER,
-	password: process.env.PGPASSWORD,
-	port: process.env.PGPORT,
-	host: process.env.PGHOST,
-	database: 'twitter2pg_database'
+// (test_db) Define a test database
+var options = {
+	testdb: 'twitter2pg_database', 
+	messages: false
 };
 
 // (test) Run tests
@@ -46,69 +42,85 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
     t.comment('Dependencies: ' + testedPackages.join(', '));
     t.comment('Developer: ' + devPackages.join(', '));
 	
-	// (test_admin)  Admin connection to create test database
-	var connectAdmin = {
-		user: process.env.PGUSER,
-		password: process.env.PGPASSWORD,
-		port: process.env.PGPORT,
-		host: process.env.PGHOST
-	};
-	
-	// (test_db) Create test database
-	pgtools.createdb(connectAdmin, 'twitter2pg_database', function (err, res) {
-		
-		// (test_db_error) Log and exit on test databse creation error
-		if (err) {
-			throw err;
-		}
-		
-		// (test_db_connect) Connect to test database
-		var db = pgp(connect);
-		
-		// (test_db_tasks) Run tests on test database
-		db.task(t => {
-			
-			// (test_db_table) Create test table
-			return t.any('CREATE TABLE twitter2pg_table (tweets jsonb);')
-				.then(events => {
-					//return t.any('');
+	// (test_functions) Define test functions
+	options.tests = [
+
+		// (a_test_get_search_singlerow) Insert searched tweets as one row
+		client => {
+			t.comment('BEGIN');
+			t.comment('(A) tests on REST API');
+			client.connect();
+			return client.query('CREATE TABLE twitter2pg_get_search_singlerow(tweets jsonb);')
+				.then(() => {
+					return twitter2pg({
+						twitter: {
+							method: 'get',
+							path: 'search/tweets',
+							params: {q: 'twitter'}
+						},
+						pg: {
+							table: 'twitter2pg_get_search_singlerow',
+							column: 'tweets',
+							query: 'INSERT INTO twitter2pg_get_search_singlerow(tweets) VALUES ($1);',
+							connection: client
+						}
+					})
+						.then(data => {
+							return client.query('SELECT * FROM twitter2pg_get_search_singlerow;')
+								.then(res => {
+									var actual = data.tweets;
+									var expected = res.rows[0].tweets;
+									t.deepEquals(actual, expected, '(A) GET search/tweets to INSERT VALUES');
+								});
+						});
 				})
-				.then(events => {
-					//x
+				.catch(err => {
+					t.fail('(A) GET search/tweets to INSERT VALUES: ' + err.message);
 				});
-		})
-			.then(event => {
-				
-				// (test_db_drop) Drop test database
-				pgp.end();
-				pgtools.dropdb(connectAdmin, 'twitter2pg_database', function(err, res) {
-					if (err) {
-						throw err
-					};
+		},
+		
+		// (a_test_get_search_multirow) Insert searched tweets as multiple rows
+		client => {
+			return client.query('CREATE TABLE twitter2pg_get_search_multirow(tweets jsonb);')
+				.then(() => {
+					return twitter2pg({
+						twitter: {
+							method: 'get',
+							path: 'search/tweets',
+							params: {q: 'twitter'}
+						},
+						pg: {
+							table: 'twitter2pg_get_search_multirow',
+							column: 'tweets',
+							query: 'INSERT INTO twitter2pg_get_search_multirow(tweets) SELECT * FROM json_array_elements($1);',
+							connection: client
+						},
+						jsonata: 'statuses'
+					})
+						.then(data => {
+							return client.query('SELECT * FROM twitter2pg_get_search_multirow;')
+								.then(res => {
+									var actual = data.tweets;
+									var expected = [];
+									for (var i = 0; i < res.rows.length; i++) {
+										expected.push(res.rows[i].tweets);
+									}
+									t.deepEquals(actual, expected, '(A) GET search/tweets to INSERT statuses as json_array_elements');
+								});
+						});
+				})
+				.catch(err => {
+					t.fail('(A) GET search/tweets to INSERT statuses as json_array_elements: ' + err.message);
 				});
-			})
-			.catch(err => {
-				
-				// (test_fail) Generic failure message under db.task
-				t.fail('(MAIN) db.task: ' + err.message);
-			});
+		},
+		client => {
+			return client.query('SELECT * FROM twitter2pg_get_search_multirow');
+		}
+	];
+
+	// (test_run) Run the tests
+	pgtestdb(options, (err, res) => {
+		t.comment('END');
 	});
-	
-	// (test_pass) Pass a test
-	t.pass('(MAIN) test pass');
-	
-	// (test_equal) Equal test
-	var actual = 1;
-	var expected = 1;
-	t.equal(actual, expected, '(A) Equal test');
-	
-	// (test_deepequal) Deep equal test
-	var actual = {a: 1, b: {c: 2}, d: [3]};
-	var expected = {a: 1, b: {c: 2}, d: [3]};
-	t.deepEquals(actual, expected, '(B) Deep equal test');
-	
-	// (test_fail) Fail a test
-	//t.fail('(MAIN) test fail');
-	
 	t.end();
 });
