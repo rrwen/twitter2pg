@@ -26,10 +26,21 @@ For the latest developer version, see [Developer Install](#developer-install).
 
 ## Usage
 
-An example usage of twitter2pg:
+### REST API
 
 ```
 var twitter2pg = require('twitter2pg');
+twitter2pg({
+	twitter: {
+		method: 'get',
+		path: 'search/tweets',
+		params: {q: 'twitter'}
+	},
+	pg: {
+		table: 'search_tweets',
+		column: 'tweets'
+	}
+});
 ```
 
 ## Contributions
@@ -107,7 +118,7 @@ npm install
 1. Clone into current path `git clone https://github.com/rrwen/twitter2pg`
 2. Enter into folder `cd twitter2pg`
 3. Ensure [devDependencies](https://docs.npmjs.com/files/package.json#devdependencies) are installed and available
-4. Run tests
+4. Run tests with a `.env` file (see [Test Environment](#tests/README.md))
 5. Results are saved to `./tests/log` with each file corresponding to a version tested
 
 ```
@@ -142,14 +153,18 @@ npm publish
 
 ### Implementation
 
-A description of the overall implementation of twitter2pg.
+The module [twitter2pg](https://www.npmjs.com/package/twitter2pg) uses the following [npm](https://www.npmjs.com/) packages for its implementation:
+
+npm | Purpose
+--- | ---
+[twitter](https://www.npmjs.com/package/twitter) | Connections to the Twitter API REST and Streaming Application Programming Interfaces (APIs)
+[jsonata](https://www.npmjs.com/package/jsonata) | Query language to filter Twitter JSON data before inserting into PostgreSQL
+[pg](https://www.npmjs.com/package/pg) | Insert Twitter data Connect to PostgreSQL tables
 
 ```
-component   <-- detail
+twitter   <-- Extract Twitter data from API
     |
-component   <-- detail
+jsonata   <-- Filter Twitter JSON data
     |
-component   <-- detail
-    |
-component   <-- detail
+   pg      <-- Insert filtered Twitter data into PostgreSQL table
 ```
