@@ -185,7 +185,7 @@ npm install
 1. Clone into current path `git clone https://github.com/rrwen/twitter2pg`
 2. Enter into folder `cd twitter2pg`
 3. Ensure [devDependencies](https://docs.npmjs.com/files/package.json#devdependencies) are installed and available
-4. Run tests with a `.env` file (see [Test Environment](#tests/README.md))
+4. Run tests with a `.env` file (see [Test Environment](tests/README.md))
 5. Results are saved to `./tests/log` with each file corresponding to a version tested
 
 ```
