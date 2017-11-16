@@ -14,14 +14,7 @@ Module for extracting Twitter data to PostgreSQL databases
 
 ## Test Environment
 
-The test environment creates an isolated PostgreSQL database named `twitter2pg_database` with the following definitions:
-
-Setting | Value
---- | ---
-**database** | twitter2pg_database
-**table** | twitter2pg_table
-**column** | tweets
-**type** | jsonb
+The test environment creates an isolated PostgreSQL database named `twitter2pg_database to run tests on.
 
 To connect to Twiter and PostgreSQL, a `.env` file is required:
 
@@ -36,8 +29,7 @@ TWITTER_ACCESS_TOKEN_KEY=***
 TWITTER_ACCESS_TOKEN_SECRET=***
 PGHOST=localhost
 PGPORT=5432
-PGDATABASE=postgres
-PGUSER=some_super_user
+PGUSER=super_user
 PGPASSWORD=***
 ```
 
