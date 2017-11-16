@@ -26,13 +26,16 @@ For the latest developer version, see [Developer Install](#developer-install).
 
 ## Usage
 
-### REST API
+The usage examples demonstrate how to get Twitter data into a PostgreSQL table with a `tweets` jsonb column:
 
 row | tweets
 --- | ---
 1 | {...}
 2 | {...}
 3 | {...}
+... | ...
+
+### REST API
 
 The code below uses the Twitter REST API to do the following:
 
@@ -75,12 +78,6 @@ twitter2pg({
 ```
 
 ### Stream API
-
-row | tweets
---- | ---
-1 | {...}
-2 | {...}
-3 | {...}
 
 The code below uses the Twitter Streaming API to do the following:
 
