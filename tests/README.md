@@ -14,7 +14,7 @@ Module for extracting Twitter data to PostgreSQL databases
 
 ## Test Environment
 
-The test environment creates an isolated PostgreSQL database named `twitter2pg_database to run tests on.
+The test environment creates an isolated PostgreSQL database named `twitter2pg_database` to run tests on.
 
 To connect to Twiter and PostgreSQL, a `.env` file is required:
 
