@@ -20,7 +20,6 @@ To connect to Twiter and PostgreSQL, a `.env` file is required:
 
 1. Create a `.env` file in the root directory
 2. Use the template below to provide Twitter credentials and PostgreSQL connection details inside the `.env` file
-3. The user in PostgreSQL must be a super user
 
 ```
 TWITTER_CONSUMER_KEY=***
