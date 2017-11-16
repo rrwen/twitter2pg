@@ -28,6 +28,12 @@ For the latest developer version, see [Developer Install](#developer-install).
 
 ### REST API
 
+row | tweets
+--- | ---
+1 | {...}
+2 | {...}
+3 | {...}
+
 The code below uses the Twitter REST API to do the following:
 
 1. Search for tweets with keyword `twitter` using  a GET request
@@ -69,6 +75,12 @@ twitter2pg({
 ```
 
 ### Stream API
+
+row | tweets
+--- | ---
+1 | {...}
+2 | {...}
+3 | {...}
 
 The code below uses the Twitter Streaming API to do the following:
 
