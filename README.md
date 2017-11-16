@@ -28,18 +28,85 @@ For the latest developer version, see [Developer Install](#developer-install).
 
 ### REST API
 
-```
+The code below uses the Twitter REST API to do the following:
+
+1. Search for tweets with keyword `twitter` using  a GET request
+2. Filter tweets to only return the array inside `statuses`
+3. Insert the filtered tweets into a PostgreSQL table named `search_tweets`
+4. Each row of the `tweets` column in the `search_tweets` table contains one tweet
+
+```javascript
 var twitter2pg = require('twitter2pg');
+
 twitter2pg({
 	twitter: {
 		method: 'get',
 		path: 'search/tweets',
-		params: {q: 'twitter'}
+		params: {q: 'twitter'},
+		jsonata: 'statuses',
+		connection: {
+			consumer_key: '***',
+			consumer_secret: '***',
+			access_token_key: '***',
+			access_token_secret: '***'
+		}
 	},
 	pg: {
 		table: 'search_tweets',
-		column: 'tweets'
+		column: 'tweets',
+		query: 'INSERT INTO search_tweets(tweets) SELECT * FROM json_array_elements($1);',
+		connection: {
+			host: 'localhost',
+			port: 5432,
+			database: 'postgres',
+			user: 'postgres',
+			password: '***'
+		}
 	}
+}).catch(err => {
+	console.error(err.message);
+});
+```
+
+### Stream API
+
+The code below uses the Twitter Streaming API to do the following:
+
+1. Stream tweets to track keyword `twitter`
+2. When a tweet is available, insert the tweet into a PostgreSQL table named `stream_tweets`
+3. Each tweet is inserted as one row in the `tweets` column of the `stream_tweets` table
+
+```javascript
+var twitter2pg = require('twitter2pg');
+
+var stream = twitter2pg({
+	twitter: {
+		method: 'stream',
+		path: 'statuses/filter',
+		params: {track: 'twitter'},
+		connection: {
+			consumer_key: '***',
+			consumer_secret: '***',
+			access_token_key: '***',
+			access_token_secret: '***'
+		}
+	},
+	pg: {
+		table: 'stream_tweets',
+		column: 'tweets',
+		query: 'INSERT INTO search_tweets(tweets) VALUES($1);',
+		connection: {
+			host: 'localhost',
+			port: 5432,
+			database: 'postgres',
+			user: 'postgres',
+			password: '***'
+		}
+	}
+});
+
+stream.on('error', function(error) {
+	console.error(error.message);
 });
 ```
 

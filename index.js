@@ -32,6 +32,7 @@ module.exports = options => {
 	options.pg = options.pg || {};
 	options.pg.table = options.pg.table || 'twitter2pg_table';
 	options.pg.column = options.pg.column || 'tweets';
+	options.pg.type = options.pg.type || 'jsonb';
 	options.pg.query = options.pg.query || 'INSERT INTO ' + options.pg.table + '(' + options.pg.column + ') VALUES ($1);';
 	
 	// (pg_connect) Connection options for pg-promise
