@@ -29,7 +29,11 @@ var Twitter = require('twitter');
  * @param {string} [options.pg.query= 'INSERT INTO $options.pg.table ($options.pg.column) VALUES ($1);'] PostgreSQL parameterized query to insert Twitter data in JSON format.
  * * `$1` is the Twitter data in JSON format
  * @param {Object} [options.stream={}] options for the returned Twitter stream.
- * @param {function} [options.stream.callback=function(){}] callback function on a stream 'data' event.
+ * @param {function} [options.stream.callback=function(err, data){}] callback function on a stream 'data' event.
+ * * `data` is in the form of `{stream: ..., tweets: ..., res: ...}`
+ * * `data.stream` is the {@link https://www.npmjs.com/package/twitter#streaming-api twitter stream}
+ * * `data.tweets` are  the tweets in JSON format
+ * * `data.res` is the PostgreSQL {@link https://node-postgres.com/features/queries query results} of `options.pg.query`
  * @returns {(Promise|stream)} Returns a stream if `options.twitter.method` is 'stream', otherwise returns a Promise.
  *
  * @example <caption>Sample tweets.</caption>
@@ -41,7 +45,7 @@ module.exports = options => {
 	
 	// (stream_defaults) Default options for streams
 	options.stream = options.stream || {};
-	options.stream.callback = options.stream.callback || function(){};
+	options.stream.callback = options.stream.callback || function(err, data){};
 	
 	// (twitter_defaults) Default options for twitter
 	options.twitter = options.twitter || {};

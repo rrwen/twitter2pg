@@ -226,9 +226,15 @@
     <tr>
   <td class='break-word'><span class='code bold'>options.stream.callback</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function">function</a></code>
   
-    (default <code>function(){}</code>)
+    (default <code>function(err,data){}</code>)
   </td>
   <td class='break-word'><span>callback function on a stream 'data' event.
+<ul>
+<li><code>data</code> is in the form of <code>{stream: ..., tweets: ..., res: ...}</code></li>
+<li><code>data.stream</code> is the <a href="https://www.npmjs.com/package/twitter#streaming-api">twitter stream</a></li>
+<li><code>data.tweets</code> are  the tweets in JSON format</li>
+<li><code>data.res</code> is the PostgreSQL <a href="https://node-postgres.com/features/queries">query results</a> of <code>options.pg.query</code></li>
+</ul>
 </span></td>
 </tr>
 
