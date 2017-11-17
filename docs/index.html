@@ -1,0 +1,288 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>twitter2pg 0.0.0 | Documentation</title>
+  <meta name='viewport' content='width=device-width,initial-scale=1'>
+  <link href='assets/bass.css' type='text/css' rel='stylesheet' />
+  <link href='assets/style.css' type='text/css' rel='stylesheet' />
+  <link href='assets/github.css' type='text/css' rel='stylesheet' />
+  <link href='assets/split.css' type='text/css' rel='stylesheet' />
+</head>
+<body class='documentation m0'>
+    <div class='flex'>
+      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
+        <div class='py1 px2'>
+          <h3 class='mb0 no-anchor'>twitter2pg</h3>
+          <div class='mb1'><code>0.0.0</code></div>
+          <input
+            placeholder='Filter'
+            id='filter-input'
+            class='col12 block input'
+            type='text' />
+          <div id='toc'>
+            <ul class='list-reset h5 py1-ul'>
+              
+                
+                <li><a
+                  href='#twitter2pg'
+                  class="">
+                  twitter2pg
+                  
+                </a>
+                
+                </li>
+              
+            </ul>
+          </div>
+          <div class='mt1 h6 quiet'>
+            <a href='http://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
+          </div>
+        </div>
+      </div>
+      <div id='split-right' class='relative overflow-auto height-viewport-100'>
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='twitter2pg'>
+      twitter2pg
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Extract data from the Twitter Application Programming Interface (API) to a PostgreSQL table.  </p>
+<ul>
+<li><a href="https://github.com/rrwen/twitter2pg">Github Repository</a></li>
+<li><a href="https://developer.twitter.com/en/docs">Twitter Developer Documentation</a></li>
+<li><a href="https://developer.twitter.com/en/docs/api-reference-index">Twitter API Reference Index</a></li>
+<li><a href="https://developer.twitter.com/en/docs/tweets/filter-realtime/overview">Filter Realtime Tweets</a></li>
+</ul>
+
+
+  <div class='pre p1 fill-light mt0'>twitter2pg</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
+            = <code>{}</code>)</code>
+	    options for this function.
+
+          </div>
+          
+          <table class='mt1 mb2 fixed-table h5 col-12'>
+            <colgroup>
+              <col width='30%' />
+              <col width='70%' />
+            </colgroup>
+            <thead>
+              <tr class='bold fill-light'>
+                <th>Name</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody class='mt1'>
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.twitter</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
+  
+    (default <code>{}</code>)
+  </td>
+  <td class='break-word'><span>options for 
+<a href="https://www.npmjs.com/package/twitter">twitter</a>
+.
+</span></td>
+</tr>
+
+  
+    <tr>
+  <td class='break-word'><span class='code bold'>options.twitter.method</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
+  
+    (default <code>&#39;get&#39;</code>)
+  </td>
+  <td class='break-word'><span>Twitter API request method in lowercase letters ('get', 'post', 'delete', or 'stream').
+</span></td>
+</tr>
+
+
+  
+    <tr>
+  <td class='break-word'><span class='code bold'>options.twitter.path</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
+  
+    (default <code>&#39;search/tweets&#39;</code>)
+  </td>
+  <td class='break-word'><span>Twitter API endpoint path (such as 'search/tweets' for 'get' or 'statuses/filter' for 'stream').
+<ul>
+<li>For REST API endpoints, see <a href="https://developer.twitter.com/en/docs/api-reference-index">Twitter API Reference Index</a></li>
+<li>For Streaming endpoints, see <a href="https://developer.twitter.com/en/docs/tweets/filter-realtime/overview">Filter Realtime Tweets</a></li>
+</ul>
+</span></td>
+</tr>
+
+
+  
+    <tr>
+  <td class='break-word'><span class='code bold'>options.twitter.params</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
+  
+    (default <code>{q:&#39;twitter&#39;}</code>)
+  </td>
+  <td class='break-word'><span>Twitter API parameters for the 
+<code>options.twitter.method</code>
+ and 
+<code>options.twitter.path</code>
+.
+</span></td>
+</tr>
+
+
+  
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.pg</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
+  
+    (default <code>{}</code>)
+  </td>
+  <td class='break-word'><span>contains options for queries in 
+<a href="https://www.npmjs.com/package/pg">pg</a>
+.
+</span></td>
+</tr>
+
+  
+    <tr>
+  <td class='break-word'><span class='code bold'>options.pg.table</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+  
+    (default <code>&#39;twitter2pg_table&#39;</code>)
+  </td>
+  <td class='break-word'><span>PostgreSQL table name.
+</span></td>
+</tr>
+
+
+  
+    <tr>
+  <td class='break-word'><span class='code bold'>options.pg.table</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+  
+    (default <code>&#39;tweets&#39;</code>)
+  </td>
+  <td class='break-word'><span>PostgreSQL column name for 
+<code>options.pg.table</code>
+.
+<ul>
+<li>Column must be a <a href="https://www.postgresql.org/docs/9.4/static/datatype-json.html">Javascript Object Notation (JSON) type</a></li>
+</ul>
+</span></td>
+</tr>
+
+
+  
+    <tr>
+  <td class='break-word'><span class='code bold'>options.pg.query</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+  
+    (default <code>&#39;INSERT INTO $options.pg.table ($options.pg.column) VALUES ($1);&#39;</code>)
+  </td>
+  <td class='break-word'><span>PostgreSQL parameterized query to insert Twitter data in JSON format.
+<ul>
+<li><code>$1</code> is the Twitter data in JSON format</li>
+</ul>
+</span></td>
+</tr>
+
+
+  
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.stream</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
+  
+    (default <code>{}</code>)
+  </td>
+  <td class='break-word'><span>options for the returned Twitter stream.
+</span></td>
+</tr>
+
+  
+    <tr>
+  <td class='break-word'><span class='code bold'>options.stream.callback</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function">function</a></code>
+  
+    (default <code>function(){}</code>)
+  </td>
+  <td class='break-word'><span>callback function on a stream 'data' event.
+</span></td>
+</tr>
+
+
+  
+
+
+              
+            </tbody>
+          </table>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | <a href="https://nodejs.org/api/stream.html">stream</a>)</code>:
+        Returns a stream if 
+<code>options.twitter.method</code>
+ is 'stream', otherwise returns a Promise.
+
+      
+    
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Example</div>
+    
+      <p><p>Sample tweets.</p>
+</p>
+      <pre class='p1 overflow-auto round fill-light'><span class="hljs-keyword">var</span> x = <span class="hljs-built_in">require</span>(<span class="hljs-string">'twitter2pg'</span>);</pre>
+    
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+      </div>
+    </div>
+  <script src='assets/anchor.js'></script>
+  <script src='assets/split.js'></script>
+  <script src='assets/site.js'></script>
+</body>
+</html>

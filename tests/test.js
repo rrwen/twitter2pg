@@ -60,7 +60,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						pg: {
 							table: 'twitter2pg_get_search_singlerow',
 							column: 'tweets',
-							query: 'INSERT INTO twitter2pg_get_search_singlerow(tweets) VALUES ($1);',
+							query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES ($1);',
 							connection: client
 						}
 					})
@@ -91,7 +91,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						pg: {
 							table: 'twitter2pg_get_search_multirow',
 							column: 'tweets',
-							query: 'INSERT INTO twitter2pg_get_search_multirow(tweets) SELECT * FROM json_array_elements($1);',
+							query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);',
 							connection: client
 						},
 						jsonata: 'statuses'
@@ -126,7 +126,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						pg: {
 							table: 'twitter2pg_get_favorites',
 							column: 'tweets',
-							query: 'INSERT INTO twitter2pg_get_favorites(tweets) VALUES($1);',
+							query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);',
 							connection: client
 						}
 					})
@@ -158,7 +158,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						pg: {
 							table: 'twitter2pg_stream_track_keyword',
 							column: 'tweets',
-							query: 'INSERT INTO twitter2pg_stream_track_keyword(tweets) VALUES($1);',
+							query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);',
 							connection: client
 						},
 						stream: {
@@ -195,7 +195,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						pg: {
 							table: 'twitter2pg_stream_locations',
 							column: 'tweets',
-							query: 'INSERT INTO twitter2pg_stream_locations(tweets) VALUES($1);',
+							query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);',
 							connection: client
 						},
 						stream: {

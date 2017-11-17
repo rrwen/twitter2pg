@@ -26,7 +26,7 @@ For the latest developer version, see [Developer Install](#developer-install).
 
 ## Usage
 
-The usage examples demonstrate how to get Twitter data into a PostgreSQL table with a `tweets` jsonb column:
+The usage examples show how to get Twitter data into a PostgreSQL table named `twitter_data` with a `tweets` jsonb column:
 
 row | tweets
 --- | ---
@@ -37,10 +37,8 @@ row | tweets
 
 ### REST API
 
-The code below uses the Twitter REST API to do the following:
-
 1. Search for tweets with keyword `twitter` using  a GET request
-2. Filter tweets to only return the array inside `statuses`
+2. Filter tweets with [jsonata]() to only return the array inside `statuses`
 3. Insert the filtered tweets into a PostgreSQL table named `search_tweets`
 4. Each row of the `tweets` column in the `search_tweets` table contains one tweet
 
@@ -49,10 +47,10 @@ var twitter2pg = require('twitter2pg');
 
 twitter2pg({
 	twitter: {
-		method: 'get',
-		path: 'search/tweets',
-		params: {q: 'twitter'},
-		jsonata: 'statuses',
+		method: 'get', // get, post, or stream
+		path: 'search/tweets', // api path
+		params: {q: 'twitter'}, // query
+		jsonata: 'statuses', // filter
 		connection: {
 			consumer_key: '***',
 			consumer_secret: '***',
@@ -61,9 +59,9 @@ twitter2pg({
 		}
 	},
 	pg: {
-		table: 'search_tweets',
+		table: 'twitter_data',
 		column: 'tweets',
-		query: 'INSERT INTO search_tweets(tweets) SELECT * FROM json_array_elements($1);',
+		query: 'INSERT INTO $1($2) SELECT * FROM json_array_elements($3);',
 		connection: {
 			host: 'localhost',
 			port: 5432,
@@ -78,8 +76,6 @@ twitter2pg({
 ```
 
 ### Stream API
-
-The code below uses the Twitter Streaming API to do the following:
 
 1. Stream tweets to track keyword `twitter`
 2. When a tweet is available, insert the tweet into a PostgreSQL table named `stream_tweets`
@@ -101,7 +97,7 @@ var stream = twitter2pg({
 		}
 	},
 	pg: {
-		table: 'stream_tweets',
+		table: 'twitter_data',
 		column: 'tweets',
 		query: 'INSERT INTO search_tweets(tweets) VALUES($1);',
 		connection: {
@@ -202,6 +198,16 @@ npm install
 npm test
 ```
 
+### Documentation
+
+Use [documentationjs](https://www.npmjs.com/package/documentation) to generate html documentation in the `docs` folder:
+
+```
+npm run docs
+```
+
+See [JSDoc style](http://usejsdoc.org/) for formatting syntax.
+
 ### Upload to Github
 
 1. Ensure [git](https://git-scm.com/) is installed
@@ -218,11 +224,13 @@ git push
 
 1. Update the version in `package.json`
 2. Run tests and check for OK status
-3. Login to npm
-4. Publish to npm
+3. Generate documentation
+4. Login to npm
+5. Publish to npm
 
 ```
 npm test
+npm run docs
 npm login
 npm publish
 ```

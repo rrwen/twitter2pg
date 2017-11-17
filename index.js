@@ -6,6 +6,36 @@ const {Client, Pool} = require('pg');
 var jsonata = require("jsonata");
 var Twitter = require('twitter');
 
+/**
+ * Extract data from the Twitter Application Programming Interface (API) to a PostgreSQL table.  
+ *
+ * * {@link https://github.com/rrwen/twitter2pg Github Repository}
+ * * {@link https://developer.twitter.com/en/docs Twitter Developer Documentation}
+ * * {@link https://developer.twitter.com/en/docs/api-reference-index Twitter API Reference Index}
+ * * {@link https://developer.twitter.com/en/docs/tweets/filter-realtime/overview Filter Realtime Tweets}
+ *
+ * @module twitter2pg
+ * @param {Object} [options={}] options for this function.
+ * @param {Object} [options.twitter={}] options for {@link https://www.npmjs.com/package/twitter twitter}.
+ * @param {Object} [options.twitter.method='get'] Twitter API request method in lowercase letters ('get', 'post', 'delete', or 'stream').
+ * @param {Object} [options.twitter.path='search/tweets'] Twitter API endpoint path (such as 'search/tweets' for 'get' or 'statuses/filter' for 'stream').
+ * * For REST API endpoints, see {@link https://developer.twitter.com/en/docs/api-reference-index Twitter API Reference Index}
+ * * For Streaming endpoints, see {@link https://developer.twitter.com/en/docs/tweets/filter-realtime/overview Filter Realtime Tweets}
+ * @param {Object} [options.twitter.params={q:'twitter'}] Twitter API parameters for the `options.twitter.method` and `options.twitter.path`.
+ * @param {Object} [options.pg={}] contains options for queries in {@link https://www.npmjs.com/package/pg pg}.
+ * @param {string} [options.pg.table='twitter2pg_table'] PostgreSQL table name.
+ * @param {string} [options.pg.table='tweets'] PostgreSQL column name for `options.pg.table`.
+ * * Column must be a {@link https://www.postgresql.org/docs/9.4/static/datatype-json.html Javascript Object Notation (JSON) type}
+ * @param {string} [options.pg.query= 'INSERT INTO $options.pg.table ($options.pg.column) VALUES ($1);'] PostgreSQL parameterized query to insert Twitter data in JSON format.
+ * * `$1` is the Twitter data in JSON format
+ * @param {Object} [options.stream={}] options for the returned Twitter stream.
+ * @param {function} [options.stream.callback=function(){}] callback function on a stream 'data' event.
+ * @returns {(Promise|stream)} Returns a stream if `options.twitter.method` is 'stream', otherwise returns a Promise.
+ *
+ * @example <caption>Sample tweets.</caption>
+ * var x = require('twitter2pg');
+ *
+ */
 module.exports = options => {
 	options = options || {};
 	
@@ -17,7 +47,7 @@ module.exports = options => {
 	options.twitter = options.twitter || {};
 	options.twitter.method = options.twitter.method || 'get';
 	options.twitter.path = options.twitter.path || 'search/tweets';
-	options.twitter.params = options.twitter.params || {};
+	options.twitter.params = options.twitter.params || {q:'twitter'};
 	
 	// (twitter_connect) Connection options for twitter
 	options.twitter.connection = options.twitter.connection || {};
@@ -32,8 +62,9 @@ module.exports = options => {
 	options.pg = options.pg || {};
 	options.pg.table = options.pg.table || 'twitter2pg_table';
 	options.pg.column = options.pg.column || 'tweets';
-	options.pg.type = options.pg.type || 'jsonb';
-	options.pg.query = options.pg.query || 'INSERT INTO ' + options.pg.table + '(' + options.pg.column + ') VALUES ($1);';
+	options.pg.query = options.pg.query || 'INSERT INTO $options.pg.table ($options.pg.column) VALUES ($1);';
+	options.pg.query = options.pg.query.replace('$options.pg.table', options.pg.table);
+	options.pg.query = options.pg.query.replace('$options.pg.column', options.pg.column);
 	
 	// (pg_connect) Connection options for pg-promise
 	options.pg.connection = options.pg.connection || {};
