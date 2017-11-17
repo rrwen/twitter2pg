@@ -3,6 +3,8 @@
 Richard Wen  
 rrwen.dev@gmail.com  
 
+* [Documentation](https://rrwen.github.io/twitter2pg)
+
 Module for extracting Twitter data to PostgreSQL databases
 
 [![npm version](https://badge.fury.io/js/twitter2pg.svg)](https://badge.fury.io/js/twitter2pg)
