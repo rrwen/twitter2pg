@@ -4,7 +4,7 @@
   "description": "Module for extracting Twitter data to PostgreSQL databases",
   "main": "index.js",
   "scripts": {
-    "docs": "./node_modules/documentation/bin/documentation.js build */**.js -f html -o docs",
+    "docs": "node ./node_modules/documentation/bin/documentation.js build */**.js -f html -o docs",
     "test": "node ./tests/test.js",
     "test_rest": "node ./tests/test_rest.js",
     "test_stream": "node ./tests/test_stream.js"
