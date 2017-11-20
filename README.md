@@ -9,7 +9,6 @@ Module for extracting Twitter data to PostgreSQL databases.
 
 [![npm version](https://badge.fury.io/js/twitter2pg.svg)](https://badge.fury.io/js/twitter2pg)
 [![Build Status](https://travis-ci.org/rrwen/rrwen/twitter2pg.svg?branch=master)](https://travis-ci.org/rrwen/twitter2pg)
-[![Coverage Status](https://coveralls.io/repos/github/rrwen/twitter2pg/badge.svg?branch=master)](https://coveralls.io/github/rrwen/twitter2pg?branch=master)
 [![npm](https://img.shields.io/npm/dt/twitter2pg.svg)](https://www.npmjs.com/package/twitter2pg)
 [![GitHub license](https://img.shields.io/github/license/rrwen/twitter2pg.svg)](https://github.com/rrwen/twitter2pg/blob/master/LICENSE)
 [![Twitter](https://img.shields.io/twitter/url/https/github.com/rrwen/twitter2pg.svg?style=social)](https://twitter.com/intent/tweet?text=Module%20for%20extracting%20Twitter%20data%20to%20PostgreSQL%20databases:%20https%3A%2F%2Fgithub.com%2Frrwen%2Ftwitter2pg%20%23nodejs%20%23npm)
@@ -46,21 +45,24 @@ psql -h localhost -p 5432 -d postgres -U postgres -c "CREATE TABLE twitter_data(
 ### REST API
 
 1. Search for tweets with keyword `twitter` using  a GET request
-2. Filter tweets with [jsonata]() to only return the array inside `statuses`
+2. Filter tweets with [jsonata](https://www.npmjs.com/package/jsonata) to only return the array inside `statuses`
 3. Insert the filtered tweets into a PostgreSQL table named `search_tweets`
 4. Each row of the `tweets` column in the `search_tweets` table contains one tweet
 
 ```javascript
 var twitter2pg = require('twitter2pg');
 
-options = {};
+options = {
+	pg: {},
+	twitter: {},
+	jsonata: 'statuses' // filter tweets for statuses array only
+};
 
 // (options_twitter) Twitter API options
 options.twitter = {
 	method: 'get', // get, post, or stream
 	path: 'search/tweets', // api path
-	params: {q: 'twitter'}, // query tweets
-	jsonata: 'statuses', // filter tweets
+	params: {q: 'twitter'} // query tweets
 };
 
 // (options_twitter_connection) Twitter API connection keys

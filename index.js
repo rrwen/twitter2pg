@@ -13,6 +13,7 @@ var Twitter = require('twitter');
  * * {@link https://developer.twitter.com/en/docs Twitter Developer Documentation}
  *
  * @module twitter2pg
+ *
  * @param {Object} [options={}] options for this function.
  * @param {Object} [options.twitter={}] options for {@link https://www.npmjs.com/package/twitter twitter}.
  * @param {Object} [options.twitter.method='get'] Twitter API request method in lowercase letters ('get', 'post', 'delete', or 'stream').
@@ -62,7 +63,8 @@ var Twitter = require('twitter');
  * @param {number} [options.pg.port=process.env.PGPORT || 5432] **Port** number of PostgreSQL instance.
  * @param {number} [options.pg.database=process.env.PGDATABASE|| process.env.PGUSER || process.env.USER || 'postgres'] **Database** name for PostgreSQL instance.
  * @param {string} [options.pg.user=process.env.PGUSER || process.env.USER || 'postgres'] **User** name for PostgreSQL instance.
- * @param {string} [options.pg.password=process.env.PGPASSWORD] **Password** of user for PostgreSQL instance. 
+ * @param {string} [options.pg.password=process.env.PGPASSWORD] **Password** of user for PostgreSQL instance.
+ * @param {string} options.jsonata {@link https://www.npmjs.com/package/jsonata jsonata} query for the recieved tweet object in JSON format before inserting into the PostgreSQL table (`options.pg.table`).
  * @param {Object} [options.stream={}] options for the returned {@link  https://www.npmjs.com/package/twitter#streaming-api Twitter stream}.
  * @param {function} [options.stream.callback=function(err, data){}] callback function on a stream 'data' event.
  *
@@ -124,9 +126,9 @@ var Twitter = require('twitter');
  * options.twitter = {
  * 	method: 'get', // get, post, or stream
  * 	path: 'search/tweets', // api path
- * 	params: {q: 'twitter'}, // query tweets
- * 	jsonata: 'statuses', // filter tweets
+ * 	params: {q: 'twitter'} // query tweets
  * };
+ *
  *
  * // (options_pg) PostgreSQL options
  * options.pg = {
@@ -134,6 +136,9 @@ var Twitter = require('twitter');
  *		column: 'tweets',
  *		query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);'
  * };
+ *
+ * // (options_jsonata) Filter for statuses array using jsonata
+ * options.jsonata = 'statuses';
  *
  * // (twitter2pg_rest) Query tweets using REST API into PostgreSQL table
  * twitter2pg(options)
@@ -149,7 +154,7 @@ var Twitter = require('twitter');
  * options.twitter = {
  * 	method: 'stream',
  * 	path: 'statuses/filter',
- * 	params: {track: 'twitter'},
+ * 	params: {track: 'twitter'}
  * };
  *
  * // (options_pg) PostgreSQL options
@@ -158,6 +163,9 @@ var Twitter = require('twitter');
  * 	column: 'tweets',
  * 	query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);'
  * };
+ *
+ * // (options_jsonata) Remove jsonata filter
+ * delete options.jsonata;
  * 
  * // (twitter2pg_stream) Stream tweets into PostgreSQL table
  * var stream = twitter2pg(options);

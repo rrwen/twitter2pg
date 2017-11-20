@@ -383,6 +383,18 @@
 
               
                 <tr>
+  <td class='break-word'><span class='code bold'>options.jsonata</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+  </td>
+  <td class='break-word'><span><a href="https://www.npmjs.com/package/jsonata">jsonata</a>
+ query for the recieved tweet object in JSON format before inserting into the PostgreSQL table 
+<code>options.pg.table</code>
+.
+</span></td>
+</tr>
+
+
+              
+                <tr>
   <td class='break-word'><span class='code bold'>options.stream</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
   
     (default <code>{}</code>)
@@ -491,9 +503,9 @@ options.pg.connection = {
 options.twitter = {
 	<span class="hljs-attr">method</span>: <span class="hljs-string">'get'</span>, <span class="hljs-comment">// get, post, or stream</span>
 	path: <span class="hljs-string">'search/tweets'</span>, <span class="hljs-comment">// api path</span>
-	params: {<span class="hljs-attr">q</span>: <span class="hljs-string">'twitter'</span>}, <span class="hljs-comment">// query tweets</span>
-	jsonata: <span class="hljs-string">'statuses'</span>, <span class="hljs-comment">// filter tweets</span>
+	params: {<span class="hljs-attr">q</span>: <span class="hljs-string">'twitter'</span>} <span class="hljs-comment">// query tweets</span>
 };
+
 
 <span class="hljs-comment">// (options_pg) PostgreSQL options</span>
 options.pg = {
@@ -501,6 +513,9 @@ options.pg = {
 	<span class="hljs-attr">column</span>: <span class="hljs-string">'tweets'</span>,
 	<span class="hljs-attr">query</span>: <span class="hljs-string">'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);'</span>
 };
+
+<span class="hljs-comment">// (options_jsonata) Filter for statuses array using jsonata</span>
+options.jsonata = <span class="hljs-string">'statuses'</span>;
 
 <span class="hljs-comment">// (twitter2pg_rest) Query tweets using REST API into PostgreSQL table</span>
 twitter2pg(options)
@@ -516,7 +531,7 @@ twitter2pg(options)
 options.twitter = {
 	<span class="hljs-attr">method</span>: <span class="hljs-string">'stream'</span>,
 	<span class="hljs-attr">path</span>: <span class="hljs-string">'statuses/filter'</span>,
-	<span class="hljs-attr">params</span>: {<span class="hljs-attr">track</span>: <span class="hljs-string">'twitter'</span>},
+	<span class="hljs-attr">params</span>: {<span class="hljs-attr">track</span>: <span class="hljs-string">'twitter'</span>}
 };
 
 <span class="hljs-comment">// (options_pg) PostgreSQL options</span>
@@ -525,6 +540,9 @@ options.pg = {
 	<span class="hljs-attr">column</span>: <span class="hljs-string">'tweets'</span>,
 	<span class="hljs-attr">query</span>: <span class="hljs-string">'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);'</span>
 };
+
+<span class="hljs-comment">// (options_jsonata) Remove jsonata filter</span>
+<span class="hljs-keyword">delete</span> options.jsonata;
 
 <span class="hljs-comment">// (twitter2pg_stream) Stream tweets into PostgreSQL table</span>
 <span class="hljs-keyword">var</span> stream = twitter2pg(options);

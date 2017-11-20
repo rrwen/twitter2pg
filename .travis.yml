@@ -15,7 +15,3 @@ addons:
       - g++-4.8
 install:
   - npm install
-script:
-  - npm test
-after_success:
-  - npm run coverage
