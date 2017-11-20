@@ -5,7 +5,7 @@ rrwen.dev@gmail.com
 
 * [Documentation](https://rrwen.github.io/twitter2pg)
 
-Module for extracting Twitter data to PostgreSQL databases
+Module for extracting Twitter data to PostgreSQL databases.
 
 [![npm version](https://badge.fury.io/js/twitter2pg.svg)](https://badge.fury.io/js/twitter2pg)
 [![Build Status](https://travis-ci.org/rrwen/rrwen/twitter2pg.svg?branch=master)](https://travis-ci.org/rrwen/twitter2pg)
@@ -37,6 +37,12 @@ row | tweets
 3 | {...}
 ... | ...
 
+Create an appropriate PostgreSQL table with [psql](https://www.postgresql.org/docs/current/static/app-psql.html) before running the usage examples:
+
+```
+psql -h localhost -p 5432 -d postgres -U postgres -c "CREATE TABLE twitter_data(tweets jsonb)"
+```
+
 ### REST API
 
 1. Search for tweets with keyword `twitter` using  a GET request
@@ -47,32 +53,42 @@ row | tweets
 ```javascript
 var twitter2pg = require('twitter2pg');
 
-twitter2pg({
-	twitter: {
-		method: 'get', // get, post, or stream
-		path: 'search/tweets', // api path
-		params: {q: 'twitter'}, // query
-		jsonata: 'statuses', // filter
-		connection: {
-			consumer_key: '***',
-			consumer_secret: '***',
-			access_token_key: '***',
-			access_token_secret: '***'
-		}
-	},
-	pg: {
-		table: 'twitter_data',
-		column: 'tweets',
-		query: 'INSERT INTO $1($2) SELECT * FROM json_array_elements($3);',
-		connection: {
-			host: 'localhost',
-			port: 5432,
-			database: 'postgres',
-			user: 'postgres',
-			password: '***'
-		}
-	}
-}).catch(err => {
+options = {};
+
+// (options_twitter) Twitter API options
+options.twitter = {
+	method: 'get', // get, post, or stream
+	path: 'search/tweets', // api path
+	params: {q: 'twitter'}, // query tweets
+	jsonata: 'statuses', // filter tweets
+};
+
+// (options_twitter_connection) Twitter API connection keys
+options.twitter.connection =  {
+	consumer_key: '***',
+	consumer_secret: '***',
+	access_token_key: '***',
+	access_token_secret: '***'
+};
+
+// (options_pg) PostgreSQL options
+options.pg = {
+	table: 'twitter_data',
+	column: 'tweets',
+	query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);'
+};
+
+// (options_pg_connection) PostgreSQL connection details
+options.pg.connection = {
+	host: 'localhost',
+	port: 5432,
+	database: 'postgres',
+	user: 'postgres',
+	password: '***'
+};
+
+// (twitter2pg_rest) Query tweets using REST API into PostgreSQL table
+twitter2pg(options).catch(err => {
 	console.error(err.message);
 });
 ```
@@ -86,32 +102,41 @@ twitter2pg({
 ```javascript
 var twitter2pg = require('twitter2pg');
 
-var stream = twitter2pg({
-	twitter: {
-		method: 'stream',
-		path: 'statuses/filter',
-		params: {track: 'twitter'},
-		connection: {
-			consumer_key: '***',
-			consumer_secret: '***',
-			access_token_key: '***',
-			access_token_secret: '***'
-		}
-	},
-	pg: {
-		table: 'twitter_data',
-		column: 'tweets',
-		query: 'INSERT INTO search_tweets(tweets) VALUES($1);',
-		connection: {
-			host: 'localhost',
-			port: 5432,
-			database: 'postgres',
-			user: 'postgres',
-			password: '***'
-		}
-	}
-});
+options = {};
 
+// (options_twitter) Twitter API options
+options.twitter = {
+	method: 'stream',
+	path: 'statuses/filter',
+	params: {track: 'twitter'},
+};
+
+// (options_twitter_connection) Twitter API connection keys
+options.twitter.connection =  {
+	consumer_key: '***',
+	consumer_secret: '***',
+	access_token_key: '***',
+	access_token_secret: '***'
+};
+
+// (options_pg) PostgreSQL options
+options.pg = {
+	table: 'twitter_data',
+	column: 'tweets',
+	query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);'
+};
+
+// (options_pg_connection) PostgreSQL connection details
+options.pg.connection = {
+	host: 'localhost',
+	port: 5432,
+	database: 'postgres',
+	user: 'postgres',
+	password: '***'
+};
+
+// (twitter2pg_stream) Stream tweets into PostgreSQL table
+var stream = twitter2pg(options);
 stream.on('error', function(error) {
 	console.error(error.message);
 });

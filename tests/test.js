@@ -67,7 +67,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						.then(data => {
 							return client.query('SELECT * FROM twitter2pg_get_search_singlerow;')
 								.then(res => {
-									var actual = data.tweets;
+									var actual = data.twitter.tweets;
 									var expected = res.rows[0].tweets;
 									t.deepEquals(actual, expected, '(A) GET search/tweets to INSERT VALUES');
 								});
@@ -99,7 +99,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						.then(data => {
 							return client.query('SELECT * FROM twitter2pg_get_search_multirow;')
 								.then(res => {
-									var actual = data.tweets;
+									var actual = data.twitter.tweets;
 									var expected = [];
 									for (var i = 0; i < res.rows.length; i++) {
 										expected.push(res.rows[i].tweets);
@@ -133,7 +133,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						.then(data => {
 							return client.query('SELECT * FROM twitter2pg_get_favorites;')
 								.then(res => {
-									var actual = data.tweets;
+									var actual = data.twitter.tweets;
 									var expected = res.rows[0].tweets;
 									t.deepEquals(actual, expected, '(A) GET favorites/list to INSERT VALUES');
 								});
