@@ -4,7 +4,7 @@
   "description": "Module for extracting Twitter data to PostgreSQL databases",
   "main": "index.js",
   "scripts": {
-    "docs": "node ./node_modules/documentation/bin/documentation.js build */**.js -f html -o docs",
+    "docs": "documentation build */**.js -f html -o docs",
     "test": "node ./tests/test.js",
     "test_rest": "node ./tests/test_rest.js",
     "test_stream": "node ./tests/test_stream.js"
@@ -52,6 +52,7 @@
     "tape": "^4.8.0"
   },
   "dependencies": {
+    "documentation": "^5.3.3",
     "jsonata": "^1.4.0",
     "pg": "^7.4.0",
     "twitter": "^1.7.1"
