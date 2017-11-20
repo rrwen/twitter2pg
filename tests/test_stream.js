@@ -28,11 +28,15 @@ var testFile = './tests/log/test_' + json.version.split('.').join('_') + '_strea
 test.createStream().pipe(fs.createWriteStream(testFile));
 test.createStream().pipe(process.stdout);
 
-// (test_db) Define a test database
-var options = {
-	testdb: 'twitter2pg_database', 
-	messages: false
-};
+// (connect) Create postgres connection
+const {Pool} = require('pg');
+const pool = new Pool({
+	host: process.env.PGHOST || 'localhost',
+	port: process.env.PGPORT || 5432,
+	database: process.env.PGDATABASE || 'postgres',
+	user: process.env.PGUSER || 'postgres',
+	password: process.env.PGPASSWORD
+});
 
 // (test) Run tests
 test('Tests for ' + json.name + ' (' + json.version + ')', t => {
@@ -57,7 +61,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 
 	// (options_pg) PostgreSQL options
 	options.pg = {
-		table: 'twitter_data',
+		table: 'twitter_stream',
 		column: 'tweets',
 		query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);'
 	};
@@ -66,8 +70,21 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 	options.stream = {};
 	options.stream.callback = function(err, data) {
 		t.pass('(MANUAL) Stream API: Received tweet with ' + Object.keys(data.twitter.tweets).length + ' keys');
-		data.twitter.stream.destroy();
-		process.exit();
+		pool.query('SELECT * FROM twitter_stream;')
+			.then(res => {
+				var actual = data.twitter.tweets;
+				var expected = res.rows[0].tweets;
+				t.deepEquals(actual, expected, '(B) STREAM statuses/filter with keyword track: ');
+				data.twitter.stream.destroy();
+				pool.end();
+				process.exit();
+			})
+			.catch(err => {
+				t.fail('(B) STREAM statuses/filter with keyword track: ' + err.message);
+				data.twitter.stream.destroy();
+				pool.end();
+				process.exit();
+			});
 	};
 
 	// (twitter2pg_stream) Stream tweets into PostgreSQL table
@@ -75,6 +92,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 	stream.on('error', function(error) {
 		t.fail('(MANUAL) Stream API: ' + error.message);
 		stream.destroy();
+		pool.end();
 		process.exit();
 	});
 	t.end();

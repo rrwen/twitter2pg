@@ -210,7 +210,6 @@ module.exports = options => {
 		var pgClient = new Pool({
 			connectionString: options.pg.connection
 		});
-		pgClient.connect();
 	} else if (!(options.pg.connection instanceof Client || options.pg.connection instanceof Pool)) {
 		options.pg.connection.host = options.pg.connection.host || process.env.PGHOST || 'localhost',
 		options.pg.connection.port = options.pg.connection.port || process.env.PGPORT || 5432;
@@ -218,7 +217,6 @@ module.exports = options => {
 		options.pg.connection.user = options.pg.connection.user  || process.env.PGUSER || process.env.USER || 'postgres';
 		options.pg.connection.password = options.pg.connection.password || process.env.PGPASSWORD;
 		var pgClient = new Pool(options.pg.connection);
-		pgClient.connect();
 	} else {
 		var pgClient = options.pg.connection;
 	}

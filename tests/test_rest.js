@@ -5,6 +5,7 @@
 require('dotenv').config();
 var fs = require('fs');
 var moment = require('moment');
+var pg = require('pg');
 var pgtestdb = require('pg-testdb');
 var test = require('tape');
 var twitter2pg = require('../index.js');
@@ -28,11 +29,15 @@ var testFile = './tests/log/test_' + json.version.split('.').join('_') + '_rest.
 test.createStream().pipe(fs.createWriteStream(testFile));
 test.createStream().pipe(process.stdout);
 
-// (test_db) Define a test database
-var options = {
-	testdb: 'twitter2pg_database', 
-	messages: false
-};
+// (connect) Create postgres connection
+const {Pool} = require('pg');
+const pool = new Pool({
+	host: process.env.PGHOST || 'localhost',
+	port: process.env.PGPORT || 5432,
+	database: process.env.PGDATABASE || 'postgres',
+	user: process.env.PGUSER || 'postgres',
+	password: process.env.PGPASSWORD
+});
 
 // (test) Run tests
 test('Tests for ' + json.name + ' (' + json.version + ')', t => {
@@ -58,7 +63,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 
 	// (options_pg) PostgreSQL options
 	options.pg = {
-		table: 'twitter_data',
+		table: 'twitter_rest',
 		column: 'tweets',
 		query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);'
 	};
@@ -66,12 +71,29 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 	// (twitter2pg_rest) Query tweets using REST API into PostgreSQL table
 	twitter2pg(options)
 		.then(data => {
-			data.pg.client.end();
 			t.pass('(MANUAL) REST API: ' + 'Received ' + data.twitter.tweets.length + ' tweets');
-			process.exit();
+			pool.query('SELECT * FROM twitter_rest;')
+				.then(res => {
+					var actual = data.twitter.tweets;
+					var expected = [];
+					for (var i = 0; i < res.rows.length; i++) {
+						expected.push(res.rows[i].tweets);
+					}
+					t.deepEquals(actual, expected, '(MANUAL) GET search/tweets to INSERT statuses as json_array_elements');
+					data.pg.client.end();
+					pool.end();
+					process.exit();
+				})
+				.catch(err => {
+					t.fail('(MAIN) GET search/tweets to INSERT statuses as json_array_elements: ' + err.message);
+					data.pg.client.end();
+					pool.end();
+					process.exit();
+				});
 		}).catch(err => {
-			data.pg.client.end();
 			t.fail('(MANUAL) REST API: ' + err.message);
+			data.pg.client.end();
+			pool.end();
 			process.exit();
 		});
 	t.end();

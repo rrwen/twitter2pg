@@ -40,9 +40,9 @@ npm test
 
 ## Manual Tests
 
-These tests are based on the [Usage](../README.md#usage) documentation.  
+Additional manual tests are based on the [Usage](../README.md#usage) documentation and are saved in (log)[#log].  
   
-In addition to the [Test Environment](#test-environment) `.env` file setup, you will have to create a `twitter_data` table in PostgreSQL using [psql](https://www.postgresql.org/docs/current/static/app-psql.html):
+In addition to the [Test Environment](#test-environment) `.env` file setup, you will have to run [create.sql](#create.sql) in [psql](https://www.postgresql.org/docs/current/static/app-psql.html) to create empty test tables named `twitter_rest` and `twitter_stream`:
 
 * `-h`: host address
 * `-p`: port number
@@ -51,20 +51,18 @@ In addition to the [Test Environment](#test-environment) `.env` file setup, you 
 * `-c`: PostgreSQL query
 
 ```
-psql -h localhost -p 5432 -d postgres -U postgres -c "CREATE TABLE twitter_data(tweets jsonb);"
+psql -h localhost -p 5432 -d postgres -U postgres -f tests/create.sql
 ```
 
-Once the `twitter_data` table is created, you may run the following to test the [REST API]((../README.md#rest-api) and [Streaming API]((../README.md#stream-api) usage examples respectively:
-
-* Additional tests are saved in `./tests/log`
+Once [create.sql](#create.sql) is finished creating the test tables, you may run the following to test the [REST API]((../README.md#rest-api) and [Streaming API]((../README.md#stream-api) usage examples respectively:
 
 ```
 npm run test_rest
 npm run test_stream
 ```
 
-You may also wish to remove the test table after from your database:
+After manual testing, you may wish to drop the test tables named `twitter_rest` and `twitter_stream` with [drop.sql](#drop.sql):
 
 ```
-psql -h localhost -p 5432 -d postgres -U postgres -c "DROP TABLE twitter_data;"
+psql -h localhost -p 5432 -d postgres -U postgres -f tests/drop.sql
 ```
