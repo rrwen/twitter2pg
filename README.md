@@ -40,7 +40,7 @@ row | tweets
 Create an appropriate PostgreSQL table with [psql](https://www.postgresql.org/docs/current/static/app-psql.html) before running the usage examples:
 
 ```
-psql -h localhost -p 5432 -d postgres -U postgres -c "CREATE TABLE twitter_data(tweets jsonb)"
+psql -h localhost -p 5432 -d postgres -U postgres -c "CREATE TABLE twitter_data(tweets jsonb);"
 ```
 
 ### REST API
@@ -141,6 +141,8 @@ stream.on('error', function(error) {
 	console.error(error.message);
 });
 ```
+
+See [Documentation](https://rrwen.github.io/twitter2pg) for more details.
 
 ## Contributions
 

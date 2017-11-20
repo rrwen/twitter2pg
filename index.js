@@ -73,7 +73,21 @@ var Twitter = require('twitter');
  * * `data.pg.client` is the PostgreSQL {@link https://node-postgres.com/features/connecting client} from `options.pg.connection`
  * * `data.pg.results` is the PostgreSQL {@link https://node-postgres.com/features/queries query results} of `options.pg.query`
  *
- * @returns {(Promise|stream)} Returns a stream if `options.twitter.method` is 'stream', otherwise returns a Promise.
+ * @returns {(Promise|stream)} Returns a stream if `options.twitter.method` is 'stream', otherwise returns a Promise:
+ *
+ * **If `options.twitter.method` == `'stream'`** 
+ *
+ * * Return a {@link https://www.npmjs.com/package/twitter#streaming-api Twitter stream}  
+ * * `stream.on('data', function)`: calls `function` when a tweet is available  
+ * * `stream.on('error', function)`: calls `function` when there is an error  
+ *
+ * **Else** 
+ * 
+ * * Return a {@link Promise} object that resolves a `data` object in the form `{twitter: {client: ..., tweets: ...}, pg: {client: ..., results: ...}}`  
+ * * `data.twitter.client`: contains a {@link https://www.npmjs.com/package/twitter Twitter client} object created from `options.twitter.connection`  
+ * * `data.twitter.tweets`: contains the {@link https://www.npmjs.com/package/twitter tweets} in JSON format  
+ * * `data.pg.client`: contains the PostgreSQL {@link https://node-postgres.com/features/connecting client} from `options.pg.connection`  
+ * * `data.pg.results`: contains the PostgreSQL {@link https://node-postgres.com/features/queries query results} of `options.pg.query`  
  *
  * @example 
  *

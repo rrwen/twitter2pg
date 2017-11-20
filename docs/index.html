@@ -432,7 +432,21 @@
       <code>(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> | <a href="https://nodejs.org/api/stream.html">stream</a>)</code>:
         Returns a stream if 
 <code>options.twitter.method</code>
- is 'stream', otherwise returns a Promise.
+ is 'stream', otherwise returns a Promise:
+<p><strong>If <code>options.twitter.method</code> == <code>'stream'</code></strong> </p>
+<ul>
+<li>Return a <a href="https://www.npmjs.com/package/twitter#streaming-api">Twitter stream</a>  </li>
+<li><code>stream.on('data', function)</code>: calls <code>function</code> when a tweet is available  </li>
+<li><code>stream.on('error', function)</code>: calls <code>function</code> when there is an error  </li>
+</ul>
+<p><strong>Else</strong> </p>
+<ul>
+<li>Return a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a> object that resolves a <code>data</code> object in the form <code>{twitter: {client: ..., tweets: ...}, pg: {client: ..., results: ...}}</code>  </li>
+<li><code>data.twitter.client</code>: contains a <a href="https://www.npmjs.com/package/twitter">Twitter client</a> object created from <code>options.twitter.connection</code>  </li>
+<li><code>data.twitter.tweets</code>: contains the <a href="https://www.npmjs.com/package/twitter">tweets</a> in JSON format  </li>
+<li><code>data.pg.client</code>: contains the PostgreSQL <a href="https://node-postgres.com/features/connecting">client</a> from <code>options.pg.connection</code>  </li>
+<li><code>data.pg.results</code>: contains the PostgreSQL <a href="https://node-postgres.com/features/queries">query results</a> of <code>options.pg.query</code></li>
+</ul>
 
       
     
