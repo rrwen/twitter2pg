@@ -74,7 +74,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 			.then(res => {
 				var actual = data.twitter.tweets;
 				var expected = res.rows[0].tweets;
-				t.deepEquals(actual, expected, '(B) STREAM statuses/filter with keyword track: ');
+				t.deepEquals(actual, expected, '(B) STREAM statuses/filter with keyword track');
 				data.twitter.stream.destroy();
 				pool.end();
 				process.exit();
