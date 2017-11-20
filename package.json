@@ -6,8 +6,8 @@
   "scripts": {
     "docs": "documentation build */**.js -f html -o docs",
     "test": "node ./tests/test.js",
-	"test_rest": "node ./tests/test_rest.js",
-	"test_stream": "node ./tests/test_stream.js"
+    "test_rest": "node ./tests/test_rest.js",
+    "test_stream": "node ./tests/test_stream.js"
   },
   "directories": {
     "test": "tests"
