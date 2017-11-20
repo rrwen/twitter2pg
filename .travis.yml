@@ -18,4 +18,3 @@ script:
   - cd twitter2pg
   - npm update --dev
   - npm run docs
-  - npm install .
