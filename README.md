@@ -38,6 +38,12 @@ row | tweets
 
 Create an appropriate PostgreSQL table with [psql](https://www.postgresql.org/docs/current/static/app-psql.html) before running the usage examples:
 
+* `-h`: host address
+* `-p`: port number
+* `-d`: database name
+* `-U`: user name with table creation permissions
+* `-c`: PostgreSQL query
+
 ```
 psql -h localhost -p 5432 -d postgres -U postgres -c "CREATE TABLE twitter_data(tweets jsonb);"
 ```

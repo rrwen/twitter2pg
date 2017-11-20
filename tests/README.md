@@ -37,3 +37,34 @@ The [Tests](../README.md#tests) can then be run with the following command:
 ```
 npm test
 ```
+
+## Manual Tests
+
+These tests are based on the [Usage](../README.md#usage) documentation.  
+  
+In addition to the [Test Environment](#test-environment) `.env` file setup, you will have to create a `twitter_data` table in PostgreSQL using [psql](https://www.postgresql.org/docs/current/static/app-psql.html):
+
+* `-h`: host address
+* `-p`: port number
+* `-d`: database name
+* `-U`: user name with table creation permissions
+* `-c`: PostgreSQL query
+
+```
+psql -h localhost -p 5432 -d postgres -U postgres -c "CREATE TABLE twitter_data(tweets jsonb);"
+```
+
+Once the `twitter_data` table is created, you may run the following to test the [REST API]((../README.md#rest-api) and [Streaming API]((../README.md#stream-api) usage examples respectively:
+
+* Additional tests are saved in `./tests/log`
+
+```
+npm run test_rest
+npm run test_stream
+```
+
+You may also wish to remove the test table after from your database:
+
+```
+psql -h localhost -p 5432 -d postgres -U postgres -c "DROP TABLE twitter_data;"
+```
