@@ -13,5 +13,8 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-4.8
-install:
-  - npm install
+install: true
+script:
+  - cd twitter2pg
+  - npm update --dev
+  - npm run docs
