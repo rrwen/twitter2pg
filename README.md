@@ -289,5 +289,5 @@ twitter   <-- Extract Twitter data from API
     |
 jsonata   <-- Filter Twitter JSON data
     |
-   pg      <-- Insert filtered Twitter data into PostgreSQL table
+   pg     <-- Insert filtered Twitter data into PostgreSQL table
 ```
