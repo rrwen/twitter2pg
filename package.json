@@ -1,6 +1,6 @@
 {
   "name": "twitter2pg",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Module for extracting Twitter data to PostgreSQL databases",
   "main": "index.js",
   "scripts": {
