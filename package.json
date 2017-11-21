@@ -1,6 +1,6 @@
 {
   "name": "twitter2pg",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Module for extracting Twitter data to PostgreSQL databases",
   "main": "index.js",
   "scripts": {
@@ -52,7 +52,8 @@
     "tape": "^4.8.0"
   },
   "dependencies": {
-    "jsonata": "^1.4.0",
+    "jsonata": "^1.4.1",
+    "moment": "^2.19.2",
     "pg": "^7.4.0",
     "twitter": "^1.7.1"
   }
