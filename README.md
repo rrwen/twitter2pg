@@ -52,8 +52,8 @@ psql -h localhost -p 5432 -d postgres -U postgres -c "CREATE TABLE twitter_data(
 
 1. Search for tweets with keyword `twitter` using  a GET request
 2. Filter tweets with [jsonata](https://www.npmjs.com/package/jsonata) to only return the array inside `statuses`
-3. Insert the filtered tweets into a PostgreSQL table named `search_tweets`
-4. Each row of the `tweets` column in the `search_tweets` table contains one tweet
+3. Insert the filtered tweets into a PostgreSQL table named `twitter_data`
+4. Each row of the `tweets` column in the `twitter_data` table contains one tweet
 
 ```javascript
 var twitter2pg = require('twitter2pg');
@@ -104,8 +104,8 @@ twitter2pg(options).catch(err => {
 ### Stream API
 
 1. Stream tweets to track keyword `twitter`
-2. When a tweet is available, insert the tweet into a PostgreSQL table named `stream_tweets`
-3. Each tweet is inserted as one row in the `tweets` column of the `stream_tweets` table
+2. When a tweet is available, insert the tweet into a PostgreSQL table named `twitter_data`
+3. Each tweet is inserted as one row in the `tweets` column of the `twitter_data` table
 
 ```javascript
 var twitter2pg = require('twitter2pg');
