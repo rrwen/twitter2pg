@@ -66,7 +66,7 @@ options = {
 
 // (options_twitter) Twitter API options
 options.twitter = {
-	method: 'get', // get, post, or stream
+	method: 'get', // get, post, delete, or stream
 	path: 'search/tweets', // api path
 	params: {q: 'twitter'} // query tweets
 };
@@ -114,9 +114,9 @@ options = {};
 
 // (options_twitter) Twitter API options
 options.twitter = {
-	method: 'stream',
-	path: 'statuses/filter',
-	params: {track: 'twitter'},
+	method: 'stream', // get, post, delete, or stream
+	path: 'statuses/filter',// api path
+	params: {track: 'twitter'} // track tweets
 };
 
 // (options_twitter_connection) Twitter API connection keys
