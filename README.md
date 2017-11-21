@@ -88,11 +88,11 @@ options.pg = {
 
 // (options_pg_connection) PostgreSQL connection details
 options.pg.connection = {
-	host: 'localhost',
-	port: 5432,
-	database: 'postgres',
-	user: 'postgres',
-	password: '***'
+	host: 'localhost', // default: process.env.PGHOST
+	port: 5432, // default: process.env.PGPORT
+	database: 'postgres', // default: process.env.PGDATABASE
+	user: 'postgres', // default: process.env.PGUSER
+	password: '***' // default: process.env.PGPASSWORD
 };
 
 // (twitter2pg_rest) Query tweets using REST API into PostgreSQL table
@@ -136,11 +136,11 @@ options.pg = {
 
 // (options_pg_connection) PostgreSQL connection details
 options.pg.connection = {
-	host: 'localhost',
-	port: 5432,
-	database: 'postgres',
-	user: 'postgres',
-	password: '***'
+	host: 'localhost', // default: process.env.PGHOST
+	port: 5432, // default: process.env.PGPORT
+	database: 'postgres', // default: process.env.PGDATABASE
+	user: 'postgres', // default: process.env.PGUSER
+	password: '***' // default: process.env.PGPASSWORD
 };
 
 // (twitter2pg_stream) Stream tweets into PostgreSQL table
