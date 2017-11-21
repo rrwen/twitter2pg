@@ -52,7 +52,6 @@
     "tape": "^4.8.0"
   },
   "dependencies": {
-    "documentation": "^5.3.3",
     "jsonata": "^1.4.0",
     "pg": "^7.4.0",
     "twitter": "^1.7.1"
