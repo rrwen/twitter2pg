@@ -53,14 +53,14 @@ In addition to the [Test Environment](#test-environment) `.env` file setup, you 
 psql -h localhost -p 5432 -d postgres -U postgres -f tests/create.sql
 ```
 
-Once [create.sql](#create.sql) is finished creating the test tables, you may run the following to test the [REST API]((../README.md#rest-api) and [Streaming API]((../README.md#stream-api) usage examples respectively:
+Once [create.sql](create.sql) is finished creating the test tables, you may run the following to test the [REST API](../README.md#rest-api) and [Streaming API](../README.md#stream-api) usage examples respectively:
 
 ```
 npm run test_rest
 npm run test_stream
 ```
 
-After manual testing, you may wish to drop the test tables named `twitter_rest` and `twitter_stream` with [drop.sql](#drop.sql):
+After manual testing, you may wish to drop the test tables named `twitter_rest` and `twitter_stream` with [drop.sql](drop.sql):
 
 ```
 psql -h localhost -p 5432 -d postgres -U postgres -f tests/drop.sql
