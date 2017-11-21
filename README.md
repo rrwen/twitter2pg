@@ -80,6 +80,7 @@ options.twitter.connection =  {
 };
 
 // (options_pg) PostgreSQL options
+// In query, $1 are the JSON tweets
 options.pg = {
 	table: 'twitter_data',
 	column: 'tweets',
@@ -128,6 +129,7 @@ options.twitter.connection =  {
 };
 
 // (options_pg) PostgreSQL options
+// In query, $1 are the JSON tweets
 options.pg = {
 	table: 'twitter_data',
 	column: 'tweets',
