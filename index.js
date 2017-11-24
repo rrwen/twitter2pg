@@ -16,13 +16,13 @@ var Twitter = require('twitter');
  *
  * @param {Object} [options={}] options for this function.
  * @param {Object} [options.twitter={}] options for {@link https://www.npmjs.com/package/twitter twitter}.
- * @param {Object} [options.twitter.method='get'] Twitter API request method in lowercase letters ('get', 'post', 'delete', or 'stream').
- * @param {Object} [options.twitter.path='search/tweets'] Twitter API endpoint path (such as 'search/tweets' for 'get' or 'statuses/filter' for 'stream').
+ * @param {Object} [options.twitter.method=process.env.TWITTER_METHOD || 'get'] Twitter API request method in lowercase letters ('get', 'post', 'delete', or 'stream').
+ * @param {Object} [options.twitter.path=process.env.TWITTER_PATH || 'search/tweets'] Twitter API endpoint path (such as 'search/tweets' for 'get' or 'statuses/filter' for 'stream').
  *
  * * For REST API endpoints, see {@link https://developer.twitter.com/en/docs/api-reference-index Twitter API Reference Index}
  * * For Streaming endpoints, see {@link https://developer.twitter.com/en/docs/tweets/filter-realtime/overview Filter Realtime Tweets}
  *
- * @param {Object} [options.twitter.params={q:'twitter'}] Twitter API parameters for the `options.twitter.method` and `options.twitter.path`.
+ * @param {Object} [options.twitter.params=process.env.TWITTER_PARAMS || {q:'twitter'}] Twitter API parameters for the `options.twitter.method` and `options.twitter.path`.
  *
  * * For REST API endpoints, see {@link https://developer.twitter.com/en/docs/api-reference-index Twitter API Reference Index}
  * * For Streaming endpoints, see {@link https://developer.twitter.com/en/docs/tweets/filter-realtime/overview Filter Realtime Tweets}
@@ -46,12 +46,12 @@ var Twitter = require('twitter');
  * @param {string} [options.twitter.connection.access_token_secret=process.env.TWITTER_ACCESS_TOKEN_SECRET] Twitter API **Access Token Secret**.
  * @param {string} [options.twitter.connection.bearer_token=process.env.TWITTER_BEARER_TOKEN] Twitter API **Bearer Token**.
  * @param {Object} [options.pg={}] contains options for queries in {@link https://www.npmjs.com/package/pg pg}.
- * @param {string} [options.pg.table='twitter2pg_table'] PostgreSQL table name.
- * @param {string} [options.pg.column='tweets'] PostgreSQL column name for `options.pg.table`.
+ * @param {string} [options.pg.table=process.env.PGTABLE || 'twitter2pg_table'] PostgreSQL table name.
+ * @param {string} [options.pg.column=process.env.PGCOLUMN || 'tweets'] PostgreSQL column name for `options.pg.table`.
  *
  * * Column must be a {@link https://www.postgresql.org/docs/9.4/static/datatype-json.html Javascript Object Notation (JSON) type}
  *
- * @param {string} [options.pg.query= 'INSERT INTO $options.pg.table ($options.pg.column) VALUES ($1);'] PostgreSQL parameterized query to insert Twitter data in JSON format.
+ * @param {string} [options.pg.query=process.env.PGQUERY || 'INSERT INTO $options.pg.table ($options.pg.column) VALUES ($1);'] PostgreSQL parameterized query to insert Twitter data in JSON format.
  *
  * * `$options.pg.table` is the value set in `options.pg.table`
  * * `$options.pg. column` is the value set in `options.pg.column`
@@ -64,7 +64,7 @@ var Twitter = require('twitter');
  * @param {number} [options.pg.database=process.env.PGDATABASE|| process.env.PGUSER || process.env.USER || 'postgres'] **Database** name for PostgreSQL instance.
  * @param {string} [options.pg.user=process.env.PGUSER || process.env.USER || 'postgres'] **User** name for PostgreSQL instance.
  * @param {string} [options.pg.password=process.env.PGPASSWORD] **Password** of user for PostgreSQL instance.
- * @param {string} options.jsonata {@link https://www.npmjs.com/package/jsonata jsonata} query for the recieved tweet object in JSON format before inserting into the PostgreSQL table (`options.pg.table`).
+ * @param {string} [options.jsonata=process.env.JSONATA] {@link https://www.npmjs.com/package/jsonata jsonata} query for the recieved tweet object in JSON format before inserting into the PostgreSQL table (`options.pg.table`).
  * @param {Object} [options.stream={}] options for the returned {@link  https://www.npmjs.com/package/twitter#streaming-api Twitter stream}.
  * @param {function} [options.stream.callback=function(err, data){}] callback function on a stream 'data' event.
  *
@@ -176,6 +176,7 @@ var Twitter = require('twitter');
  */
 module.exports = options => {
 	options = options || {};
+	options.jsonata = options.jsonata || process.env.JSONATA;
 	
 	// (stream_defaults) Default options for streams
 	options.stream = options.stream || {};
@@ -183,9 +184,9 @@ module.exports = options => {
 	
 	// (twitter_defaults) Default options for twitter
 	options.twitter = options.twitter || {};
-	options.twitter.method = options.twitter.method || 'get';
-	options.twitter.path = options.twitter.path || 'search/tweets';
-	options.twitter.params = options.twitter.params || {q:'twitter'};
+	options.twitter.method = options.twitter.method || process.env.TWITTER_METHOD || 'get';
+	options.twitter.path = options.twitter.path || process.env.TWITTER_PATH || 'search/tweets';
+	options.twitter.params = options.twitter.params || process.env.TWITTER_PARAMS || {q:'twitter'};
 	
 	// (twitter_connect) Connection options for twitter
 	options.twitter.connection = options.twitter.connection || {};
@@ -198,9 +199,9 @@ module.exports = options => {
 	
 	// (pg_defaults) Default options for pg-promise
 	options.pg = options.pg || {};
-	options.pg.table = options.pg.table || 'twitter2pg_table';
-	options.pg.column = options.pg.column || 'tweets';
-	options.pg.query = options.pg.query || 'INSERT INTO $options.pg.table ($options.pg.column) VALUES ($1);';
+	options.pg.table = options.pg.table || process.env.PGTABLE || 'twitter2pg_table';
+	options.pg.column = options.pg.column || process.env.PGCOLUMN || 'tweets';
+	options.pg.query = options.pg.query || process.env.PGQUERY || 'INSERT INTO $options.pg.table ($options.pg.column) VALUES ($1);';
 	options.pg.query = options.pg.query.replace('$options.pg.table', options.pg.table);
 	options.pg.query = options.pg.query.replace('$options.pg.column', options.pg.column);
 	

@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title>twitter2pg 1.0.0 | Documentation</title>
+  <title>twitter2pg 1.0.1 | Documentation</title>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' type='text/css' rel='stylesheet' />
   <link href='assets/style.css' type='text/css' rel='stylesheet' />
@@ -14,7 +14,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>twitter2pg</h3>
-          <div class='mb1'><code>1.0.0</code></div>
+          <div class='mb1'><code>1.0.1</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -114,7 +114,7 @@
     <tr>
   <td class='break-word'><span class='code bold'>options.twitter.method</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
   
-    (default <code>&#39;get&#39;</code>)
+    (default <code>process.env.TWITTER_METHOD||&#39;get&#39;</code>)
   </td>
   <td class='break-word'><span>Twitter API request method in lowercase letters ('get', 'post', 'delete', or 'stream').
 </span></td>
@@ -125,7 +125,7 @@
     <tr>
   <td class='break-word'><span class='code bold'>options.twitter.path</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
   
-    (default <code>&#39;search/tweets&#39;</code>)
+    (default <code>process.env.TWITTER_PATH||&#39;search/tweets&#39;</code>)
   </td>
   <td class='break-word'><span>Twitter API endpoint path (such as 'search/tweets' for 'get' or 'statuses/filter' for 'stream').
 <ul>
@@ -140,7 +140,7 @@
     <tr>
   <td class='break-word'><span class='code bold'>options.twitter.params</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
   
-    (default <code>{q:&#39;twitter&#39;}</code>)
+    (default <code>process.env.TWITTER_PARAMS||{q:&#39;twitter&#39;}</code>)
   </td>
   <td class='break-word'><span>Twitter API parameters for the 
 <code>options.twitter.method</code>
@@ -268,7 +268,7 @@
     <tr>
   <td class='break-word'><span class='code bold'>options.pg.table</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
   
-    (default <code>&#39;twitter2pg_table&#39;</code>)
+    (default <code>process.env.PGTABLE||&#39;twitter2pg_table&#39;</code>)
   </td>
   <td class='break-word'><span>PostgreSQL table name.
 </span></td>
@@ -279,7 +279,7 @@
     <tr>
   <td class='break-word'><span class='code bold'>options.pg.column</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
   
-    (default <code>&#39;tweets&#39;</code>)
+    (default <code>process.env.PGCOLUMN||&#39;tweets&#39;</code>)
   </td>
   <td class='break-word'><span>PostgreSQL column name for 
 <code>options.pg.table</code>
@@ -295,7 +295,7 @@
     <tr>
   <td class='break-word'><span class='code bold'>options.pg.query</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
   
-    (default <code>&#39;INSERT INTO $options.pg.table ($options.pg.column) VALUES ($1);&#39;</code>)
+    (default <code>process.env.PGQUERY||&#39;INSERT INTO $options.pg.table ($options.pg.column) VALUES ($1);&#39;</code>)
   </td>
   <td class='break-word'><span>PostgreSQL parameterized query to insert Twitter data in JSON format.
 <ul>
@@ -384,6 +384,8 @@
               
                 <tr>
   <td class='break-word'><span class='code bold'>options.jsonata</span> <code class='quiet'><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></code>
+  
+    (default <code>process.env.JSONATA</code>)
   </td>
   <td class='break-word'><span><a href="https://www.npmjs.com/package/jsonata">jsonata</a>
  query for the recieved tweet object in JSON format before inserting into the PostgreSQL table (
