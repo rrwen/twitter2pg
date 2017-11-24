@@ -187,6 +187,9 @@ module.exports = options => {
 	options.twitter.method = options.twitter.method || process.env.TWITTER_METHOD || 'get';
 	options.twitter.path = options.twitter.path || process.env.TWITTER_PATH || 'search/tweets';
 	options.twitter.params = options.twitter.params || process.env.TWITTER_PARAMS || {q:'twitter'};
+	if (typeof options.twitter.params == 'string') {
+		options.twitter.params = JSON.parse(options.twitter.params);
+	}
 	
 	// (twitter_connect) Connection options for twitter
 	options.twitter.connection = options.twitter.connection || {};
