@@ -19,8 +19,8 @@ var Twitter = require('twitter');
  * @param {Object} [options.twitter.method=process.env.TWITTER_METHOD || 'get'] Twitter API request method in lowercase letters ('get', 'post', 'delete', or 'stream').
  * @param {Object} [options.twitter.path=process.env.TWITTER_PATH || 'search/tweets'] Twitter API endpoint path (such as 'search/tweets' for 'get' or 'statuses/filter' for 'stream').
  *
- * * For REST API endpoints, see {@link https://developer.twitter.com/en/docs/api-reference-index Twitter API Reference Index}
- * * For Streaming endpoints, see {@link https://developer.twitter.com/en/docs/tweets/filter-realtime/overview Filter Realtime Tweets}
+ * * For REST API endpoints, see {@link https://developer.twitter.com/en/docs/api-reference-index Twitter API Reference Index}  
+ * * For Streaming endpoints, see {@link https://developer.twitter.com/en/docs/tweets/filter-realtime/overview Filter Realtime Tweets}  
  *
  * @param {Object} [options.twitter.params=process.env.TWITTER_PARAMS || {q:'twitter'}] Twitter API parameters for the `options.twitter.method` and `options.twitter.path`.
  *
@@ -35,10 +35,11 @@ var Twitter = require('twitter');
  * 4. Click on your created application
  * 5. Click on **Keys and Access Tokens**
  * 6. Keep note of the following:
- * 	* **Consumer Key (API Key)**
- * 	* **Consumer Secret (API Secret)**
- * 	* **Access Token**
- * 	* **Access Token Secret**
+ *
+ * * **Consumer Key (API Key)**  
+ * * **Consumer Secret (API Secret)**  
+ * * **Access Token**  
+ * * **Access Token Secret**  
  *
  * @param {string} [options.twitter.connection.consumer_key=process.env.TWITTER_CONSUMER_KEY] Twitter API **Consumer Key (API Key)**.
  * @param {string} [options.twitter.connection.consumer_secret=process.env.TWITTER_CONSUMER_SECRET] Twitter API **Consumer Secret (API Secret)**.
@@ -86,6 +87,7 @@ var Twitter = require('twitter');
  * **Else** 
  * 
  * * Return a {@link Promise} object that resolves a `data` object in the form `{twitter: {client: ..., tweets: ...}, pg: {client: ..., results: ...}}`  
+ * 
  * * `data.twitter.client`: contains a {@link https://www.npmjs.com/package/twitter Twitter client} object created from `options.twitter.connection`  
  * * `data.twitter.tweets`: contains the {@link https://www.npmjs.com/package/twitter tweets} in JSON format  
  * * `data.pg.client`: contains the PostgreSQL {@link https://node-postgres.com/features/connecting client} from `options.pg.connection`  
@@ -123,19 +125,14 @@ var Twitter = require('twitter');
  * // *** SEARCH TWEETS ***
  *
  * // (options_twitter_rest) Search for keyword 'twitter' in path 'GET search/tweets'
- * options.twitter = {
- * 	method: 'get', // get, post, or stream
- * 	path: 'search/tweets', // api path
- * 	params: {q: 'twitter'} // query tweets
- * };
- *
+ * options.twitter.method = 'get'; // get, post, or stream
+ * options.twitter.path = 'search/tweets'; // api path
+ * options.twitter.params = {q: 'twitter'}; // query tweets
  *
  * // (options_pg) PostgreSQL options
- * options.pg = {
- *		table: 'twitter_data',
- *		column: 'tweets',
- *		query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);'
- * };
+ * options.pg.table = 'twitter_data';
+ * options.pg.column = 'tweets';
+ *	options.pg.query = 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);';
  *
  * // (options_jsonata) Filter for statuses array using jsonata
  * options.jsonata = 'statuses';
@@ -151,18 +148,14 @@ var Twitter = require('twitter');
  * // *** STREAM TWEETS ***
  *
  * // (options_twitter_connection) Track keyword 'twitter' in path 'POST statuses/filter'
- * options.twitter = {
- * 	method: 'stream',
- * 	path: 'statuses/filter',
- * 	params: {track: 'twitter'}
- * };
+ * options.twitter.method = 'stream'; // get, post, or stream
+ * options.twitter.path = 'statuses/filter'; // api path
+ * options.twitter.params = {track: 'twitter'}; // query tweets
  *
  * // (options_pg) PostgreSQL options
- * options.pg = {
- * 	table: 'twitter_data',
- * 	column: 'tweets',
- * 	query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);'
- * };
+ * options.pg.table = 'twitter_data';
+ * options.pg.column = 'tweets';
+ *	options.pg.query = 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);';
  *
  * // (options_jsonata) Remove jsonata filter
  * delete options.jsonata;
