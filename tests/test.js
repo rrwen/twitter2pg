@@ -153,19 +153,17 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						twitter: {
 							method: 'stream',
 							path: 'statuses/filter',
-							params: {track: 'twitter'}
+							params: {track: 'twitter'},
+							stream: (err, data) => {
+								console.log(data);
+								data.twitter.stream.destroy();
+							}
 						},
 						pg: {
 							table: 'twitter2pg_stream_track_keyword',
 							column: 'tweets',
 							query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);',
 							connection: client
-						},
-						stream: {
-							callback: (err, data) => {
-								console.log(data);
-								data.stream.destroy();
-							}
 						}
 					});
 					stream.on('data', function(tweets) {
@@ -190,19 +188,17 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						twitter: {
 							method: 'stream',
 							path: 'statuses/filter',
-							params: {locations: '-122.75,36.8,-121.75,37.8'} // SW(lon, lat), NE(lon, lat)
+							params: {locations: '-122.75,36.8,-121.75,37.8'}, // SW(lon, lat), NE(lon, lat)
+							stream : (err, data) => {
+								console.log(data);
+								data.twitter.stream.destroy();
+							}
 						},
 						pg: {
 							table: 'twitter2pg_stream_locations',
 							column: 'tweets',
 							query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);',
 							connection: client
-						},
-						stream: {
-							callback: (err, data) => {
-								console.log(data);
-								data.stream.destroy();
-							}
 						}
 					});
 					stream.on('data', function(tweets) {

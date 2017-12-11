@@ -3,8 +3,7 @@
 
 const {Client, Pool} = require('pg');
 
-var jsonata = require("jsonata");
-var Twitter = require('twitter');
+var twitter2return = require('twitter2return');
 
 /**
  * Extract data from the Twitter Application Programming Interface (API) to a PostgreSQL table.  
@@ -15,37 +14,17 @@ var Twitter = require('twitter');
  * @module twitter2pg
  *
  * @param {Object} [options={}] options for this function.
- * @param {Object} [options.twitter={}] options for {@link https://www.npmjs.com/package/twitter twitter}.
- * @param {Object} [options.twitter.method=process.env.TWITTER_METHOD || 'get'] Twitter API request method in lowercase letters ('get', 'post', 'delete', or 'stream').
- * @param {Object} [options.twitter.path=process.env.TWITTER_PATH || 'search/tweets'] Twitter API endpoint path (such as 'search/tweets' for 'get' or 'statuses/filter' for 'stream').
+ * @param {Object} [options.twitter={}] options for {@link https://www.npmjs.com/package/twitter twitter} (see {@link https://rrwen.github.io/twitter2return/ twitter2return}).
  *
- * * For REST API endpoints, see {@link https://developer.twitter.com/en/docs/api-reference-index Twitter API Reference Index}  
- * * For Streaming endpoints, see {@link https://developer.twitter.com/en/docs/tweets/filter-realtime/overview Filter Realtime Tweets}  
+ * @param {function} [options.twitter.stream=function(err, data){}] callback function on a stream 'data' event for the returned {@link  https://www.npmjs.com/package/twitter#streaming-api Twitter stream}.
  *
- * @param {Object} [options.twitter.params=process.env.TWITTER_PARAMS || {q:'twitter'}] Twitter API parameters for the `options.twitter.method` and `options.twitter.path`.
+ * * `err` is the {@link Error} object
+ * * `data` is in the form of `{twitter: {stream: stream, tweets: Object}, pg: {client: Object, results: Object}}`
+ * * `data.twitter.stream` is the {@link https://www.npmjs.com/package/twitter#streaming-api twitter stream}
+ * * `data.twitter.tweets` are  the {@link https://www.npmjs.com/package/twitter tweets} in JSON format
+ * * `data.pg.client` is the PostgreSQL {@link https://node-postgres.com/features/connecting client} from `options.pg.connection`
+ * * `data.pg.results` is the PostgreSQL {@link https://node-postgres.com/features/queries query results} of `options.pg.query`
  *
- * * For REST API endpoints, see {@link https://developer.twitter.com/en/docs/api-reference-index Twitter API Reference Index}
- * * For Streaming endpoints, see {@link https://developer.twitter.com/en/docs/tweets/filter-realtime/overview Filter Realtime Tweets}
- *
- * @param {Object} [options.twitter.connection={}] Twitter API connection credentials:  
- *
- * 1. Login at {@link https://apps.twitter.com/}
- * 2. Create a {@link https://apps.twitter.com/app/new new application}
- * 3. Go to your {@link https://apps.twitter.com/ applications}
- * 4. Click on your created application
- * 5. Click on **Keys and Access Tokens**
- * 6. Keep note of the following:
- *
- * * **Consumer Key (API Key)**  
- * * **Consumer Secret (API Secret)**  
- * * **Access Token**  
- * * **Access Token Secret**  
- *
- * @param {string} [options.twitter.connection.consumer_key=process.env.TWITTER_CONSUMER_KEY] Twitter API **Consumer Key (API Key)**.
- * @param {string} [options.twitter.connection.consumer_secret=process.env.TWITTER_CONSUMER_SECRET] Twitter API **Consumer Secret (API Secret)**.
- * @param {string} [options.twitter.connection.access_token_key=process.env.TWITTER_ACCESS_TOKEN_KEY] Twitter API **Access Token Key**.
- * @param {string} [options.twitter.connection.access_token_secret=process.env.TWITTER_ACCESS_TOKEN_SECRET] Twitter API **Access Token Secret**.
- * @param {string} [options.twitter.connection.bearer_token=process.env.TWITTER_BEARER_TOKEN] Twitter API **Bearer Token**.
  * @param {Object} [options.pg={}] contains options for queries in {@link https://www.npmjs.com/package/pg pg}.
  * @param {string} [options.pg.table=process.env.PGTABLE || 'twitter2pg_table'] PostgreSQL table name.
  * @param {string} [options.pg.column=process.env.PGCOLUMN || 'tweets'] PostgreSQL column name for `options.pg.table`.
@@ -60,21 +39,13 @@ var Twitter = require('twitter');
  *
  * @param {Object} [options.pg.connection={}] PostgreSQL connection details.
  *
- * @param {string} [options.pg.host=process.env.PGHOST || 'localhost'] **Host** address of PostgreSQL instance.
- * @param {number} [options.pg.port=process.env.PGPORT || 5432] **Port** number of PostgreSQL instance.
- * @param {number} [options.pg.database=process.env.PGDATABASE|| process.env.PGUSER || process.env.USER || 'postgres'] **Database** name for PostgreSQL instance.
- * @param {string} [options.pg.user=process.env.PGUSER || process.env.USER || 'postgres'] **User** name for PostgreSQL instance.
- * @param {string} [options.pg.password=process.env.PGPASSWORD] **Password** of user for PostgreSQL instance.
- * @param {string} [options.jsonata=process.env.JSONATA] {@link https://www.npmjs.com/package/jsonata jsonata} query for the recieved tweet object in JSON format before inserting into the PostgreSQL table (`options.pg.table`).
- * @param {Object} [options.stream={}] options for the returned {@link  https://www.npmjs.com/package/twitter#streaming-api Twitter stream}.
- * @param {function} [options.stream.callback=function(err, data){}] callback function on a stream 'data' event.
+ * @param {string} [options.pg.connection.host=process.env.PGHOST || 'localhost'] **Host** address of PostgreSQL instance.
+ * @param {number} [options.pg.connection.port=process.env.PGPORT || 5432] **Port** number of PostgreSQL instance.
+ * @param {number} [options.pg.connection.database=process.env.PGDATABASE|| process.env.PGUSER || process.env.USER || 'postgres'] **Database** name for PostgreSQL instance.
+ * @param {string} [options.pg.connection.user=process.env.PGUSER || process.env.USER || 'postgres'] **User** name for PostgreSQL instance.
+ * @param {string} [options.pg.connection.password=process.env.PGPASSWORD] **Password** of user for PostgreSQL instance.
  *
- * * `err` is the {@link Error} object
- * * `data` is in the form of `{twitter: {stream: stream, tweets: Object}, pg: {client: Object, results: Object}}`
- * * `data.twitter.stream` is the {@link https://www.npmjs.com/package/twitter#streaming-api twitter stream}
- * * `data.twitter.tweets` are  the {@link https://www.npmjs.com/package/twitter tweets} in JSON format
- * * `data.pg.client` is the PostgreSQL {@link https://node-postgres.com/features/connecting client} from `options.pg.connection`
- * * `data.pg.results` is the PostgreSQL {@link https://node-postgres.com/features/queries query results} of `options.pg.query`
+ * @param {string} [options.jsonata=process.env.JSONATA] {@link https://www.npmjs.com/package/jsonata jsonata} query for the recieved tweet object in JSON format before inserting into the PostgreSQL table (`options.pg.table`).
  *
  * @returns {(Promise|stream)} Returns a stream if `options.twitter.method` is 'stream', otherwise returns a Promise:
  *
@@ -169,29 +140,6 @@ var Twitter = require('twitter');
  */
 module.exports = options => {
 	options = options || {};
-	options.jsonata = options.jsonata || process.env.JSONATA;
-	
-	// (stream_defaults) Default options for streams
-	options.stream = options.stream || {};
-	options.stream.callback = options.stream.callback || function(err, data){};
-	
-	// (twitter_defaults) Default options for twitter
-	options.twitter = options.twitter || {};
-	options.twitter.method = options.twitter.method || process.env.TWITTER_METHOD || 'get';
-	options.twitter.path = options.twitter.path || process.env.TWITTER_PATH || 'search/tweets';
-	options.twitter.params = options.twitter.params || process.env.TWITTER_PARAMS || {q:'twitter'};
-	if (typeof options.twitter.params == 'string') {
-		options.twitter.params = JSON.parse(options.twitter.params);
-	}
-	
-	// (twitter_connect) Connection options for twitter
-	options.twitter.connection = options.twitter.connection || {};
-	options.twitter.connection.consumer_key = options.twitter.connection.consumer_key || process.env.TWITTER_CONSUMER_KEY;
-	options.twitter.connection.consumer_secret = options.twitter.connection.consumer_secret || process.env.TWITTER_CONSUMER_SECRET;
-	options.twitter.connection.access_token_key = options.twitter.connection.access_token_key || process.env.TWITTER_ACCESS_TOKEN_KEY;
-	options.twitter.connection.access_token_secret = options.twitter.connection.access_token_secret || process.env.TWITTER_ACCESS_TOKEN_SECRET;
-	options.twitter.connection.bearer_token = options.twitter.connection.bearer_token || process.env.TWITTER_BEARER_TOKEN;
-	var client = new Twitter(options.twitter.connection);
 	
 	// (pg_defaults) Default options for pg-promise
 	options.pg = options.pg || {};
@@ -219,37 +167,33 @@ module.exports = options => {
 	}
 	
 	// (twitter_stream) Streaming API
+	options.twitter = options.twitter || {};
+	options.twitter.method = options.twitter.method || 'get';
 	if (options.twitter.method == 'stream') {
-		var stream = client[options.twitter.method](options.twitter.path, options.twitter.params);
-		stream.on('data', function(tweets) {
-			
-			// (twitter_stream_jsonata) Filter tweets using jsonata syntax
-			if (options.jsonata) {
-				tweets = jsonata(options.jsonata).evaluate(tweets);
-			}
-			
-			// (twitter_stream_pg) Insert tweets as an array
-			pgClient.query(options.pg.query, [JSON.stringify(tweets)], function(err, res) {
-				var data = {twitter: {stream: stream, tweets: tweets}, pg: {client: pgClient, results: res}};
-				options.stream.callback(err, data);
+		
+		// (twitter_stream_pg) Insert tweets as an array
+		var streamCallback = options.twitter.stream || function(err, data) {};
+		options.twitter.stream = function(err, data) {
+			pgClient.query(options.pg.query, [JSON.stringify(data.twitter.tweets)], function(err, res) {
+				data.pg = {client: pgClient, results: res};
+				streamCallback(err, data);
 			});
-		});
+		};
+		
+		// (twitter_stream_return) Return twitter stream
+		var stream = twitter2return(options);
 		return stream;
 	} else {
 		
 		// (twitter_rest) REST API
-		return client[options.twitter.method](options.twitter.path, options.twitter.params)
-			.then(tweets => {
+		return twitter2return(options)
+			.then(data => {
 				
-				// (twitter_rest_jsonata) Filter tweets using jsonata syntax
-				if (options.jsonata) {
-					tweets = jsonata(options.jsonata).evaluate(tweets);
-				}
-				
-				// (twitter_rest_pg) Insert tweets into pg
-				return pgClient.query(options.pg.query, [JSON.stringify(tweets)])
+				// (twitter_promise_return) Return pg promise
+				return pgClient.query(options.pg.query, [JSON.stringify(data.twitter.tweets)])
 					.then(res => {
-						return {twitter: {client: client, tweets: tweets}, pg: {client: pgClient, result: res}};
+						data.pg = {client: pgClient, result: res};
+						return data;
 					});
 			});
 	}

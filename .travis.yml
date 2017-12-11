@@ -8,7 +8,7 @@ node_js:
 install:
   - npm install
 script:
-  - git clone https://github.com/rrwen/twitter2pg
-  - cd twitter2pg
-  - npm install
-  - npm update --dev
+  - npm run docs
+  - npm test
+after_success:
+  - npm run coverage
