@@ -7,8 +7,6 @@ node_js:
   - "6"
 services:
   - postgresql
-before_script:
-  - psql -c 'CREATE DATABASE postgres;' -U postgres  
 install:
   - npm install
 script:
