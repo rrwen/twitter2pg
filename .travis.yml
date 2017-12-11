@@ -9,10 +9,14 @@ services:
   - postgresql
 addons:
   postgresql: "9.6"
+before_script:
+  - psql -U postgres -f tests/create.sql
 install:
   - npm install
 script:
   - npm run docs
   - npm test
+  - npm run test_rest
+  - npm run test_stream
 after_success:
   - npm run coverage

@@ -113,37 +113,6 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 				});
 		},
 		
-		// (a_test_get_favorites) Insert 20 most recently liked tweets as multiple rows
-		client => {
-			return client.query('CREATE TABLE twitter2pg_get_favorites(tweets jsonb);')
-				.then(() => {
-					return twitter2pg({
-						twitter: {
-							method: 'get',
-							path: 'favorites/list',
-							params: {}
-						},
-						pg: {
-							table: 'twitter2pg_get_favorites',
-							column: 'tweets',
-							query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);',
-							connection: client
-						}
-					})
-						.then(data => {
-							return client.query('SELECT * FROM twitter2pg_get_favorites;')
-								.then(res => {
-									var actual = data.twitter.tweets;
-									var expected = res.rows[0].tweets;
-									t.deepEquals(actual, expected, '(A) GET favorites/list to INSERT VALUES');
-								});
-						});
-				})
-				.catch(err => {
-					t.fail('(A) GET favorites/list to INSERT VALUES: ' + err.message);
-				});
-		},
-		
 		// (b_test_stream_track_keyword) Create streaming track for keyword twitter
 		client => {
 			t.comment('(B) tests on Twitter Streaming API');

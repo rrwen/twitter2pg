@@ -291,5 +291,5 @@ npm | Purpose
 ```
 twitter2return   <-- Extract Twitter data from API and Filter JSON data
     |
-   pg     <-- Insert filtered Twitter data into PostgreSQL table
+   pg            <-- Insert filtered Twitter data into PostgreSQL table
 ```
