@@ -4,7 +4,9 @@
   "description": "Module for extracting Twitter data to PostgreSQL databases",
   "main": "index.js",
   "scripts": {
+    "coverage": "istanbul cover node_modules/tape/bin/tape tests/test.js && cat ./coverage/lcov.info | coveralls",
     "docs": "documentation build */**.js -f html -o docs",
+    "istanbul": "istanbul cover node_modules/tape/bin/tape tests/test.js",
     "test": "node ./tests/test.js",
     "test_rest": "node ./tests/test_rest.js",
     "test_stream": "node ./tests/test_stream.js"
@@ -45,15 +47,16 @@
   },
   "homepage": "https://github.com/rrwen/twitter2pg#readme",
   "devDependencies": {
+    "coveralls": "^3.0.0",
     "documentation": "^5.3.3",
     "dotenv": "^4.0.0",
+    "istanbul": "^0.4.5",
     "moment": "^2.19.1",
     "pg-testdb": "^1.0.4",
     "tape": "^4.8.0"
   },
   "dependencies": {
-    "jsonata": "^1.4.1",
     "pg": "^7.4.0",
-    "twitter": "^1.7.1"
+    "twitter2return": "^1.0.0"
   }
 }
