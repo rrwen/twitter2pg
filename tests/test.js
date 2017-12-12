@@ -78,22 +78,63 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						params: {q: 'twitter'}
 					},
 					pg: {
-						query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);',
 						connection: 'postgres://' + process.env.PGUSER + ':' + process.env.PGPASSWORD + '@' + process.env.PGHOST + ':' + process.env.PGPORT +'/' + process.env.PGDATABASE
-					},
-					jsonata: 'statuses'
+					}
 				})
 					.then(data => {
 						
-						// (test_rest_pass) REST pass if consistent with database
-						t.pass('(A) REST GET search/tweets to INSERT twitter2pg_table');
+						// (test_rest_pass) REST pass no error
+						t.pass('(A) REST GET search/tweets to INSERT twitter2pg_table with defaults');
 						data.pg.client.end();
 						
 					}).catch(err => {
 						
-						// (test_rest_fail) REST fail if inconsistent with database or error
-						t.fail('(A) REST GET search/tweets to INSERT twitter2pg_table');
+						// (test_rest_fail) REST fail if error
+						t.fail('(A) REST GET search/tweets to INSERT twitter2pg_table with defaults: ' + err.message);
 					});
+			})
+			.then(data => {
+				return client.query('CREATE TABLE twitter2pg_rest(tweets jsonb);')
+					.then(res => {
+						
+						// (test_rest2) Search for keyword 'twitter' in path 'GET search/tweets'
+						return twitter2pg({
+							twitter: {
+								method: 'get',
+								path: 'search/tweets',
+								params: {q: 'twitter'}
+							},
+							pg: {
+								table: 'twitter2pg_rest',
+								query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);'
+							},
+							jsonata: 'statuses'
+						})
+							.then(data => {
+								
+								// (test_rest2_pass) REST pass if consistent with database
+								return client.query('SELECT * FROM twitter2pg_rest;')
+									.then(res => {
+										var actual = data.twitter.tweets;
+										var expected = [];
+										for (i = 0; i < res.rows.length; i++) {
+											expected.push(res.rows[i].tweets)
+										}
+										t.deepEquals(actual, expected, '(A) REST GET search/tweets to INSERT twitter2pg_rest');
+										return data.pg.client.end(err => {
+											if (err) {
+												t.fail('(A) data.pg.client disconnect: ' + err.message);
+											} else {
+												t.pass('(A) data.pg.client disconnect')
+											}
+										});
+									})	
+							}).catch(err => {
+								
+								// (test_rest_fail) REST fail if inconsistent with database or error
+								t.fail('(A) REST GET search/tweets to INSERT twitter2pg_rest: ' + err.message);
+							});
+					})
 			})
 			.then(data => {
 				
@@ -118,35 +159,44 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						});
 						
 						// (test_stream_pass) STREAM pass if consistent with database
-						stream.on('data', data => {
-							t.pass('(B) STREAM POST statuses/filter to INSERT twitter2pg_stream');
-							
-							// (test_client_end) End pg client connection
-							client.end(err => {
-								
-								// (test_client_end_fail) Fail to end client connection
-								if (err) {
-									t.fail('(MAIN) client disconnect: ' + err.message);
-									process.exit(1);
-								}
-								
-								// (test_client_end_pass) Client successfully disconnected
-								t.pass('(MAIN) client disconnect');
-								stream.destroy();
-								
-								// (test_drop_db) Drop test databases
-								pgtools.dropdb(config, process.env.PGTESTDATABASE, function (err, res) {
-
-									// (test_drop_db_error) Fail to drop test database
-									if (err) {
-										t.fail('(MAIN) DROP DATABASE: ' + err.message);
-										process.exit(-1);
-									}
+						stream.on('data', tweets => {
+							client.query('SELECT * FROM twitter2pg_stream;')
+								.then(res => {
+									var actual = tweets;
+									var expected = res.rows[0].tweet_stream;
+									t.deepEquals(actual, expected, '(B) STREAM POST statuses/filter to INSERT twitter2pg_stream');
 									
-									// (test_drop_pass) Successfully dropped test database
-									t.pass('(MAIN) DROP DATABASE');
+									// (test_client_end) End pg client connection
+									client.end(err => {
+										
+										// (test_client_end_fail) Fail to end client connection
+										if (err) {
+											t.fail('(MAIN) client disconnect: ' + err.message);
+											process.exit(1);
+										}
+										
+										// (test_client_end_pass) Client successfully disconnected
+										t.pass('(MAIN) client disconnect');
+										stream.destroy();
+										
+										// (test_drop_db) Drop test databases
+										pgtools.dropdb(config, process.env.PGTESTDATABASE, function (err, res) {
+
+											// (test_drop_db_error) Fail to drop test database
+											if (err) {
+												t.fail('(MAIN) DROP DATABASE: ' + err.message);
+												process.exit(-1);
+											}
+											
+											// (test_drop_pass) Successfully dropped test database
+											t.pass('(MAIN) DROP DATABASE');
+										});
+									});
+								})
+								.catch(err => {
+									console.log(data);
+									//t.fail('(B) STREAM POST statuses/filter to INSERT twitter2pg_stream: ' + err.message);
 								});
-							});
 						});
 						
 						// (test_stream_fail) STREAM fail if inconsistent with database or error
