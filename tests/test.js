@@ -78,7 +78,8 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						params: {q: 'twitter'}
 					},
 					pg: {
-						query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);'
+						query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);',
+						connection: 'postgres://' + process.env.PGUSER + ':' + process.env.PGPASSWORD + '@' + process.env.PGHOST + ':' + process.env.PGPORT +'/' + process.env.PGDATABASE
 					},
 					jsonata: 'statuses'
 				})
