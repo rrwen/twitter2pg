@@ -2,7 +2,7 @@ TAP version 13
 # Tests for twitter2pg (1.1.1)
 # Node.js (v7.9.0)
 # Description: Module for extracting Twitter data to PostgreSQL databases
-# Date: 2017-12-12 04:20:05
+# Date: 2017-12-12 05:22:34
 # Dependencies: pg (^7.4.0), twitter2return (^1.0.0)
 # Developer: coveralls (^3.0.0), documentation (^5.3.3), dotenv (^4.0.0), istanbul (^0.4.5), moment (^2.19.1), pgtools (^0.3.0), tape (^4.8.0)
 ok 1 (MAIN) CREATE DATABASE

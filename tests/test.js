@@ -226,7 +226,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 								})
 								.catch(err => {
 									console.log(data);
-									//t.fail('(B) STREAM POST statuses/filter to INSERT twitter2pg_stream: ' + err.message);
+									t.fail('(B) STREAM POST statuses/filter to INSERT twitter2pg_stream: ' + err.message);
 								});
 						});
 						
