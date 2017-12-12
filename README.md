@@ -236,8 +236,6 @@ npm install
 ```
 npm install
 npm test
-npm test_rest
-npm test_stream
 ```
 
 ### Documentation
@@ -272,8 +270,6 @@ git push
 
 ```
 npm test
-npm test_rest
-npm test_stream
 npm run docs
 npm login
 npm publish

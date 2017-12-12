@@ -28,6 +28,7 @@ TWITTER_ACCESS_TOKEN_KEY=***
 TWITTER_ACCESS_TOKEN_SECRET=***
 PGHOST=localhost
 PGPORT=5432
+PGTESTDATABASE=twitter2pg_database
 PGUSER=super_user
 PGPASSWORD=***
 ```
@@ -36,33 +37,4 @@ The [Tests](../README.md#tests) can then be run with the following command:
 
 ```
 npm test
-```
-
-## Manual Tests
-
-Additional manual tests are based on the [Usage](../README.md#usage) documentation and are saved in (log)[#log].  
-  
-In addition to the [Test Environment](#test-environment) `.env` file setup, you will have to run [create.sql](#create.sql) in [psql](https://www.postgresql.org/docs/current/static/app-psql.html) to create empty test tables named `twitter_rest` and `twitter_stream`:
-
-* `-h`: host address
-* `-p`: port number
-* `-d`: database name
-* `-U`: user name with table creation permissions
-* `-c`: PostgreSQL query
-
-```
-psql -h localhost -p 5432 -d postgres -U postgres -f tests/create.sql
-```
-
-Once [create.sql](create.sql) is finished creating the test tables, you may run the following to test the [REST API](../README.md#rest-api) and [Streaming API](../README.md#stream-api) usage examples respectively:
-
-```
-npm run test_rest
-npm run test_stream
-```
-
-After manual testing, you may wish to drop the test tables named `twitter_rest` and `twitter_stream` with [drop.sql](drop.sql):
-
-```
-psql -h localhost -p 5432 -d postgres -U postgres -f tests/drop.sql
 ```
