@@ -282,7 +282,7 @@ The module [twitter2pg](https://www.npmjs.com/package/twitter2pg) uses the follo
 npm | Purpose
 --- | ---
 [twitter2return](https://www.npmjs.com/package/twitter2return) | Connections to the Twitter API REST and Streaming Application Programming Interfaces (APIs) using [twitter](https://www.npmjs.com/package/twitter) with a query language called [jsonata](https://www.npmjs.com/package/jsonata) to filter TWitter JSON data before inserting into PostgreSQL
-[pg](https://www.npmjs.com/package/pg) | Insert Twitter data Connect to PostgreSQL tables
+[pg](https://www.npmjs.com/package/pg) | Insert Twitter data to PostgreSQL tables
 
 ```
 twitter2return   <-- Extract Twitter data from API and Filter JSON data
