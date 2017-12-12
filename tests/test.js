@@ -67,6 +67,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 		client.connect();
 		client.query('CREATE TABLE twitter2pg_table(tweets jsonb);')
 			.then(res => {
+				t.comment('(A) tests on REST API');
 				t.pass('(A) CREATE TABLE twitter2pg_table');
 				
 				// (test_rest) Search for keyword 'twitter' in path 'GET search/tweets'
@@ -85,6 +86,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						
 						// (test_rest_pass) REST pass if consistent with database
 						t.pass('(A) REST GET search/tweets to INSERT twitter2pg_table');
+						data.pg.client.end();
 						
 					}).catch(err => {
 						
@@ -97,7 +99,8 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 				// (test_stream_table) Create STREAM table for tests
 				return client.query('CREATE TABLE twitter2pg_stream(tweet_stream jsonb);')
 					.then(res => {
-						t.pass('CREATE TABLE twitter2pg_stream');
+						t.comment('(B) tests on STREAM API');
+						t.pass('(B) CREATE TABLE twitter2pg_stream');
 						
 						// (test_stream) Track keyword 'twitter' in path 'POST statuses/filter'
 						var stream = twitter2pg({
@@ -108,20 +111,73 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 							},
 							pg: {
 								table: 'twitter2pg_stream',
-								column: 'tweet_stream'
+								column: 'tweet_stream',
+								connection: client
 							}
 						});
 						
 						// (test_stream_pass) STREAM pass if consistent with database
 						stream.on('data', data => {
 							t.pass('(B) STREAM POST statuses/filter to INSERT twitter2pg_stream');
-							stream.destroy();
+							
+							// (test_client_end) End pg client connection
+							client.end(err => {
+								
+								// (test_client_end_fail) Fail to end client connection
+								if (err) {
+									t.fail('(MAIN) client disconnect: ' + err.message);
+									process.exit(1);
+								}
+								
+								// (test_client_end_pass) Client successfully disconnected
+								t.pass('(MAIN) client disconnect');
+								stream.destroy();
+								
+								// (test_drop_db) Drop test databases
+								pgtools.dropdb(config, process.env.PGTESTDATABASE, function (err, res) {
+
+									// (test_drop_db_error) Fail to drop test database
+									if (err) {
+										t.fail('(MAIN) DROP DATABASE: ' + err.message);
+										process.exit(-1);
+									}
+									
+									// (test_drop_pass) Successfully dropped test database
+									t.pass('(MAIN) DROP DATABASE');
+								});
+							});
 						});
 						
 						// (test_stream_fail) STREAM fail if inconsistent with database or error
 						stream.on('error', error => {
 							t.fail('(B) STREAM POST statuses/filter to INSERT twitter2pg_stream: ' + error.message);
-							stream.destroy();
+							
+							// (test_client_end) End pg client connection
+							client.end(err => {
+								
+								// (test_client_end_fail) Fail to end client connection
+								if (err) {
+									t.fail('(MAIN) client disconnect: ' + err.message);
+									process.exit(1);
+								}
+								
+								// (test_client_end_pass) Client successfully disconnected
+								t.pass('(MAIN) client disconnect');
+								stream.destroy();
+								
+								// (test_drop_db) Drop test databases
+								pgtools.dropdb(config, process.env.PGTESTDATABASE, function (err, res) {
+
+									// (test_drop_db_error) Fail to drop test database
+									if (err) {
+										t.fail('(MAIN) DROP DATABASE: ' + err.message);
+										process.exit(-1);
+									}
+									
+									// (test_drop_pass) Successfully dropped test database
+									t.pass('(MAIN) DROP DATABASE');
+								});
+							});
 						});
 					})
 					.catch(err => {
@@ -130,34 +186,6 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 			})
 			.catch(err => {
 				t.fail('(A) CREATE TABLE twitter2pg_table: ' + err.message);
-			})
-			.then(() => {
-				
-				// (test_client_end) End pg client connection
-				client.end(err => {
-					
-					// (test_client_end_fail) Fail to end client connection
-					if (err) {
-						t.fail('(MAIN) Client disconnect: ' + err.message);
-						process.exit(1);
-					}
-					
-					// (test_client_end_pass) Client successfully disconnected
-					t.pass('(MAIN) Client disconnect');
-					
-					// (test_drop_db) Drop test databases
-					pgtools.dropdb(config, process.env.PGTESTDATABASE, function (err, res) {
-
-						// (test_drop_db_error) Fail to drop test database
-						if (err) {
-							t.fail('(MAIN) DROP DATABASE: ' + err.message);
-							process.exit(-1);
-						}
-						
-						// (test_drop_pass) Successfully dropped test database
-						t.pass('(MAIN) DROP DATABASE');
-					});
-				});
 			});
 		t.end();
 	});
