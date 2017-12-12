@@ -106,7 +106,14 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 							},
 							pg: {
 								table: 'twitter2pg_rest',
-								query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);'
+								query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);',
+								connection: {
+									host: process.env.PGHOST,
+									port: process.env.PGPORT,
+									database: process.env.PGTESTDATABASE,
+									user: process.env.PGUSER,
+									password: process.env.PGPASSWORD
+								}
 							},
 							jsonata: 'statuses'
 						})
