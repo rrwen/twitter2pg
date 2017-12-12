@@ -115,13 +115,13 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						// (test_stream_pass) STREAM pass if consistent with database
 						stream.on('data', data => {
 							t.pass('(B) STREAM POST statuses/filter to INSERT twitter2pg_stream');
-							process.exit(0);
+							stream.destroy();
 						});
 						
 						// (test_stream_fail) STREAM fail if inconsistent with database or error
 						stream.on('error', error => {
 							t.fail('(B) STREAM POST statuses/filter to INSERT twitter2pg_stream: ' + error.message);
-							process.exit(1);
+							stream.destroy();
 						});
 					})
 					.catch(err => {
@@ -133,20 +133,33 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 			})
 			.then(() => {
 				
-				// (test_drop_db) Drop test database
-				pgtools.dropdb(config, process.env.PGTESTDATABASE, function (err, res) {
+				// (test_client_end) End pg client connection
+				client.end(err => {
 					
-					// (test_drop_db_error) Fail to drop test database
+					// (test_client_end_fail) Fail to end client connection
 					if (err) {
-						t.fail('(MAIN) DROP DATABASE: ' + err.message);
-						process.exit(-1);
+						t.fail('(MAIN) Client disconnect: ' + err.message);
+						process.exit(1);
 					}
 					
-					// (test_drop_pass) Successfully dropped test database
-					t.pass('(MAIN) DROP DATABASE');
+					// (test_client_end_pass) Client successfully disconnected
+					t.pass('(MAIN) Client disconnect');
+					
+					// (test_drop_db) Drop test databases
+					pgtools.dropdb(config, process.env.PGTESTDATABASE, function (err, res) {
+
+						// (test_drop_db_error) Fail to drop test database
+						if (err) {
+							t.fail('(MAIN) DROP DATABASE: ' + err.message);
+							process.exit(-1);
+						}
+						
+						// (test_drop_pass) Successfully dropped test database
+						t.pass('(MAIN) DROP DATABASE');
+					});
 				});
-				t.end();
 			});
+		t.end();
 	});
 	
 });
