@@ -93,11 +93,42 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 						t.fail('(A) REST GET search/tweets to INSERT twitter2pg_table with defaults: ' + err.message);
 					});
 			})
+			.then(res => {
+				
+				// (test_rest2) Search for keyword 'twitter' in path 'GET search/tweets' with manual settings
+				return twitter2pg({
+					twitter: {
+						method: 'get',
+						path: 'search/tweets',
+						params: {q: 'twitter'}
+					},
+					pg: {
+						connection: {
+							host: process.env.PGHOST,
+							port: process.env.PGPORT,
+							database: process.env.PGTESTDATABASE,
+							user: process.env.PGUSER,
+							password: process.env.PGPASSWORD
+						}
+					}
+				})
+					.then(data => {
+						
+						// (test_rest2_pass) REST pass no error
+						t.pass('(A) REST GET search/tweets to INSERT twitter2pg_table with manual connection');
+						data.pg.client.end();
+						
+					}).catch(err => {
+						
+						// (test_rest2_fail) REST fail if error
+						t.fail('(A) REST GET search/tweets to INSERT twitter2pg_table with manual connection: ' + err.message);
+					});
+			})
 			.then(data => {
 				return client.query('CREATE TABLE twitter2pg_rest(tweets jsonb);')
 					.then(res => {
 						
-						// (test_rest2) Search for keyword 'twitter' in path 'GET search/tweets'
+						// (test_rest3) Search for keyword 'twitter' in path 'GET search/tweets'
 						return twitter2pg({
 							twitter: {
 								method: 'get',
@@ -106,20 +137,13 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 							},
 							pg: {
 								table: 'twitter2pg_rest',
-								query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);',
-								connection: {
-									host: process.env.PGHOST,
-									port: process.env.PGPORT,
-									database: process.env.PGTESTDATABASE,
-									user: process.env.PGUSER,
-									password: process.env.PGPASSWORD
-								}
+								query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);'
 							},
 							jsonata: 'statuses'
 						})
 							.then(data => {
 								
-								// (test_rest2_pass) REST pass if consistent with database
+								// (test_rest3_pass) REST pass if consistent with database
 								return client.query('SELECT * FROM twitter2pg_rest;')
 									.then(res => {
 										var actual = data.twitter.tweets;
@@ -138,7 +162,7 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
 									})	
 							}).catch(err => {
 								
-								// (test_rest_fail) REST fail if inconsistent with database or error
+								// (test_rest3_fail) REST fail if inconsistent with database or error
 								t.fail('(A) REST GET search/tweets to INSERT twitter2pg_rest: ' + err.message);
 							});
 					})
