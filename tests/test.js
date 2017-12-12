@@ -5,9 +5,10 @@
 require('dotenv').config();
 var fs = require('fs');
 var moment = require('moment');
-var pgtestdb = require('pg-testdb');
+var pgtools = require('pgtools');
 var test = require('tape');
 var twitter2pg = require('../index.js');
+const { Client } = require('pg');
 
 // (test_info) Get package metadata
 var json = JSON.parse(fs.readFileSync('package.json', 'utf8'));
@@ -42,152 +43,110 @@ test('Tests for ' + json.name + ' (' + json.version + ')', t => {
     t.comment('Dependencies: ' + testedPackages.join(', '));
     t.comment('Developer: ' + devPackages.join(', '));
 	
-	// (test_functions) Define test functions
-	options.tests = [
-
-		// (a_test_get_search_singlerow) Insert searched tweets as one row
-		client => {
-			t.comment('(A) tests on Twitter REST API');
-			client.connect();
-			return client.query('CREATE TABLE twitter2pg_get_search_singlerow(tweets jsonb);')
-				.then(() => {
-					return twitter2pg({
-						twitter: {
-							method: 'get',
-							path: 'search/tweets',
-							params: {q: 'twitter'}
-						},
-						pg: {
-							table: 'twitter2pg_get_search_singlerow',
-							column: 'tweets',
-							query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES ($1);',
-							connection: client
-						}
-					})
-						.then(data => {
-							return client.query('SELECT * FROM twitter2pg_get_search_singlerow;')
-								.then(res => {
-									var actual = data.twitter.tweets;
-									var expected = res.rows[0].tweets;
-									t.deepEquals(actual, expected, '(A) GET search/tweets to INSERT VALUES');
-								});
-						});
-				})
-				.catch(err => {
-					t.fail('(A) GET search/tweets to INSERT VALUES: ' + err.message);
-				});
-		},
+	// (test_create_db) Create test database
+	const config = {
+		user: process.env.PGUSER,
+		password: process.env.PGPASSWORD,
+		port: process.env.PGPORT,
+		host: process.env.PGHOST
+	};
+	pgtools.createdb(config, process.env.PGTESTDATABASE, function (err, res) {
+		process.env.PGDATABASE = process.env.PGTESTDATABASE;
+		const client = new Client();
 		
-		// (a_test_get_search_multirow) Insert searched tweets as multiple rows
-		client => {
-			return client.query('CREATE TABLE twitter2pg_get_search_multirow(tweets jsonb);')
-				.then(() => {
-					return twitter2pg({
-						twitter: {
-							method: 'get',
-							path: 'search/tweets',
-							params: {q: 'twitter'}
-						},
-						pg: {
-							table: 'twitter2pg_get_search_multirow',
-							column: 'tweets',
-							query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);',
-							connection: client
-						},
-						jsonata: 'statuses'
-					})
-						.then(data => {
-							return client.query('SELECT * FROM twitter2pg_get_search_multirow;')
-								.then(res => {
-									var actual = data.twitter.tweets;
-									var expected = [];
-									for (var i = 0; i < res.rows.length; i++) {
-										expected.push(res.rows[i].tweets);
-									}
-									t.deepEquals(actual, expected, '(A) GET search/tweets to INSERT statuses as json_array_elements');
-								});
-						});
-				})
-				.catch(err => {
-					t.fail('(A) GET search/tweets to INSERT statuses as json_array_elements: ' + err.message);
-				});
-		},
-		
-		// (b_test_stream_track_keyword) Create streaming track for keyword twitter
-		client => {
-			t.comment('(B) tests on Twitter Streaming API');
-			return client.query('CREATE TABLE twitter2pg_stream_track_keyword(tweets jsonb);')
-				.then(() => {
-					var stream = twitter2pg({
-						twitter: {
-							method: 'stream',
-							path: 'statuses/filter',
-							params: {track: 'twitter'},
-							stream: (err, data) => {
-								console.log(data);
-								data.twitter.stream.destroy();
-							}
-						},
-						pg: {
-							table: 'twitter2pg_stream_track_keyword',
-							column: 'tweets',
-							query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);',
-							connection: client
-						}
-					});
-					stream.on('data', function(tweets) {
-						t.pass('(B) STREAM statuses/filter with keyword track');
-						stream.destroy();
-					});
-					stream.on('error', function(error) {
-						t.fail('(B) STREAM statuses/filter with keyword track: ' + error.message);
-						stream.destroy();
-					});
-				})
-				.catch(err => {
-					t.fail('(B) STREAM statuses/filter with keyword track: ' + err.message);
-				});
-		},
-		
-		// (b_test_stream_locations) Create streaming track for bounding box locations
-		client => {
-			return client.query('CREATE TABLE twitter2pg_stream_locations(tweets jsonb);')
-				.then(() => {
-					var stream = twitter2pg({
-						twitter: {
-							method: 'stream',
-							path: 'statuses/filter',
-							params: {locations: '-122.75,36.8,-121.75,37.8'}, // SW(lon, lat), NE(lon, lat)
-							stream : (err, data) => {
-								console.log(data);
-								data.twitter.stream.destroy();
-							}
-						},
-						pg: {
-							table: 'twitter2pg_stream_locations',
-							column: 'tweets',
-							query: 'INSERT INTO $options.pg.table($options.pg.column) VALUES($1);',
-							connection: client
-						}
-					});
-					stream.on('data', function(tweets) {
-						t.pass('(B) STREAM statuses/filter given locations bounds');
-						stream.destroy();
-					});
-					stream.on('error', function(error) {
-						t.fail('(B) STREAM statuses/filter given locations bounds: ' + error.message);
-						stream.destroy();
-					});
-				})
-				.catch(err => {
-					t.fail('(B) STREAM statuses/filter given locations bounds: ' + err.message);
-				});
+		// (test_create_db_error) Fail to create test database
+		if (err) {
+			t.fail('(MAIN) CREATE DATABASE: ' + err.message);
+			process.exit(-1);
 		}
-	];
-
-	// (test_run) Run the tests
-	pgtestdb(options, (err, res) => {
-		if (err) throw err;
+		
+		// (test_create_db_pass) Successfully created test database
+		t.pass('(MAIN) CREATE DATABASE');
+		
+		// (test_rest_table) Create REST table for tests
+		client.connect();
+		client.query('CREATE TABLE twitter2pg_table(tweets jsonb);')
+			.then(res => {
+				t.pass('(A) CREATE TABLE twitter2pg_table');
+				
+				// (test_rest) Search for keyword 'twitter' in path 'GET search/tweets'
+				return twitter2pg({
+					twitter: {
+						method: 'get',
+						path: 'search/tweets',
+						params: {q: 'twitter'}
+					},
+					pg: {
+						query: 'INSERT INTO $options.pg.table($options.pg.column) SELECT * FROM json_array_elements($1);'
+					},
+					jsonata: 'statuses'
+				})
+					.then(data => {
+						
+						// (test_rest_pass) REST pass if consistent with database
+						t.pass('(A) REST GET search/tweets to INSERT twitter2pg_table');
+						
+					}).catch(err => {
+						
+						// (test_rest_fail) REST fail if inconsistent with database or error
+						t.fail('(A) REST GET search/tweets to INSERT twitter2pg_table');
+					});
+			})
+			.then(data => {
+				
+				// (test_stream_table) Create STREAM table for tests
+				return client.query('CREATE TABLE twitter2pg_stream(tweet_stream jsonb);')
+					.then(res => {
+						t.pass('CREATE TABLE twitter2pg_stream');
+						
+						// (test_stream) Track keyword 'twitter' in path 'POST statuses/filter'
+						var stream = twitter2pg({
+							twitter: {
+								method: 'stream',
+								path: 'statuses/filter',
+								params: '{"track": "twitter"}'
+							},
+							pg: {
+								table: 'twitter2pg_stream',
+								column: 'tweet_stream'
+							}
+						});
+						
+						// (test_stream_pass) STREAM pass if consistent with database
+						stream.on('data', data => {
+							t.pass('(B) STREAM POST statuses/filter to INSERT twitter2pg_stream');
+							process.exit(0);
+						});
+						
+						// (test_stream_fail) STREAM fail if inconsistent with database or error
+						stream.on('error', error => {
+							t.fail('(B) STREAM POST statuses/filter to INSERT twitter2pg_stream: ' + error.message);
+							process.exit(1);
+						});
+					})
+					.catch(err => {
+						t.fail('(B) CREATE TABLE twitter2pg_stream: ' + err.message);
+					});
+			})
+			.catch(err => {
+				t.fail('(A) CREATE TABLE twitter2pg_table: ' + err.message);
+			})
+			.then(() => {
+				
+				// (test_drop_db) Drop test database
+				pgtools.dropdb(config, process.env.PGTESTDATABASE, function (err, res) {
+					
+					// (test_drop_db_error) Fail to drop test database
+					if (err) {
+						t.fail('(MAIN) DROP DATABASE: ' + err.message);
+						process.exit(-1);
+					}
+					
+					// (test_drop_pass) Successfully dropped test database
+					t.pass('(MAIN) DROP DATABASE');
+				});
+				t.end();
+			});
 	});
-	t.end();
+	
 });

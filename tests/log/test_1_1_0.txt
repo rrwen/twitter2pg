@@ -1,16 +1,12 @@
 TAP version 13
 # Tests for twitter2pg (1.1.0)
-# Node.js (v7.9.0)
+# Node.js (v9.2.0)
 # Description: Module for extracting Twitter data to PostgreSQL databases
-# Date: 2017-12-11 02:17:25
+# Date: 2017-12-11 10:31:01
 # Dependencies: pg (^7.4.0), twitter2return (^1.0.0)
-# Developer: coveralls (^3.0.0), documentation (^5.3.3), dotenv (^4.0.0), istanbul (^0.4.5), moment (^2.19.1), pg-testdb (^1.0.4), tape (^4.8.0)
-# (A) tests on Twitter REST API
-ok 1 (A) GET search/tweets to INSERT VALUES
-ok 2 (A) GET search/tweets to INSERT statuses as json_array_elements
-ok 3 (A) GET favorites/list to INSERT VALUES
-# (B) tests on Twitter Streaming API
-ok 4 (B) STREAM statuses/filter with keyword track
-ok 5 (B) STREAM statuses/filter given locations bounds
-
-1..5
+# Developer: coveralls (^3.0.0), documentation (^5.3.3), dotenv (^4.0.0), istanbul (^0.4.5), moment (^2.19.1), pgtools (^0.3.0), tape (^4.8.0)
+ok 1 (MAIN) CREATE DATABASE
+ok 2 (A) CREATE TABLE twitter2pg_table
+ok 3 (A) REST GET search/tweets to INSERT twitter2pg_table
+ok 4 CREATE TABLE twitter2pg_stream
+ok 5 (B) STREAM POST statuses/filter to INSERT twitter2pg_stream
